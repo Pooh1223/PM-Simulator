@@ -1,0 +1,129 @@
+:root {
+	--mnHt: 100px;
+}
+
+html,body{
+	margin: 0;
+	padding: 0;
+}
+
+/*battle field*/
+
+.you{
+	float: left;
+	width: 50%;
+	height: 100vh;
+	background: darkred;
+}
+
+.oppo{
+	float: right;
+	width: 50%;
+	height: 100vh;
+	background: darkblue;
+}
+
+.upper-area {
+	width: 100%;
+	height: 45vh;
+	min-height: var(--mnHt * 2);
+	max-height: var(--mxHt * 2);
+	font-size: 1.5em;
+}
+
+.played-area {
+	float: left;
+	width: 87%;
+	height: 100%;
+	min-height: var(--mnHt * 2);
+}
+
+.damage-area {
+	float: right;
+	width: 13%;
+	height: 100%;
+	min-height: var(--mnHt * 2);
+}
+
+#main-area {
+	/*float: left;*/
+	width: calc(50vw * 83%);
+	height: 50%;
+	/*min-height: var(--mnHt);*/
+	/*margin-right: 13%;*/
+	margin-left: 2vw;
+	background: lightgreen;
+}
+
+#support-area {
+	/*float: left;*/
+	width: calc(50vw * 83%);
+	height: 50%;
+	/*min-height: var(--mnHt);*/
+	
+	margin-left: 2vw;
+	background: lightyellow;
+}
+
+#point-area {
+	width: 100%;
+	height: 100%;
+	/*min-height: calc(var(--mnHt) * 2);*/
+	background: skyblue;
+}
+
+
+/*hand,deck,exclusion...*/
+
+.lower-area {
+	width: 100%;
+	height: 55vh;
+	font-size: 1.5em;
+}
+
+.hand-area {
+	float: left;
+	width: 74%;
+	height: 100%;
+}
+
+.deck-stack{
+	float: right;
+	width: 26%;
+	height: 100%;
+}
+
+#hand {
+	width: calc(50vw * 70%);
+	height: 100%;
+	margin-left: 2vw;
+	background: gray;
+}
+
+#deck {
+	float: left;
+	width: 50%;
+	height: 50%;
+	background: orange;
+}
+
+#ex-deck {
+	float: right;
+	width: 50%;
+	height: 50%;
+	background: honeydew;
+}
+
+#discard-area {
+	float: left;
+	width: 50%;
+	height: 50%;
+	background: mediumslateblue;
+}
+
+#excluded-area {
+	float: left;
+	width: 50%;
+	height: 50%;
+	background: dodgerblue;
+}
