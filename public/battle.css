@@ -53,6 +53,7 @@ html,body{
 	/*margin-right: 13%;*/
 	margin-left: 2vw;
 	background: lightgreen;
+	overflow-y: auto;
 }
 
 #support-area {
@@ -63,6 +64,7 @@ html,body{
 	
 	margin-left: 2vw;
 	background: lightyellow;
+	overflow-y: auto;
 }
 
 #point-area {
@@ -98,6 +100,7 @@ html,body{
 	height: 100%;
 	margin-left: 2vw;
 	background: gray;
+	overflow-y: auto;
 }
 
 #deck {

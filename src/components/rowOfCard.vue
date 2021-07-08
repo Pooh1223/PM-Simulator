@@ -100,3 +100,6 @@ export default {
   opacity: 0;
 }
 </style>
+
+
+明天解決index永遠=排列順序的問題

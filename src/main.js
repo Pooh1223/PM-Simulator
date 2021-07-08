@@ -5,4 +5,12 @@ Vue.config.productionTip = false;
 
 new Vue({
   render: (h) => h(App),
-}).$mount("#hand");
+}).$mount("#hand > #app");
+
+new Vue({
+  render: (h) => h(App),
+}).$mount("#support-area > #app");
+
+new Vue({
+  render: (h) => h(App),
+}).$mount("#main-area > #app");

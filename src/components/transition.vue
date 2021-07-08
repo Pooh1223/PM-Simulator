@@ -1,8 +1,8 @@
 <template>
   <div class="container">
-    <div class="row" v-for="(mlist,index) in list" :key="index">
-      <rowofcard :card-map="mlist"></rowofcard>
-    <!--<draggable
+    <!--<div class="row" v-for="mlist in list" :key="mlist.order">
+      <rowofcard :card-map="mlist"></rowofcard>-->
+    <draggable
       class="card-list"
       tag="div"
       v-model="list"
@@ -20,6 +20,8 @@
           class="item col"
           v-for="(element, index) in list"
           :key="element.order"
+          @click="show_list"
+          :class = "index % 5 == 0 ? 'item col-2 offset-1' : 'item col-2' "
         >
           <img src="../PM_Back.jpg" />
           <i
@@ -31,25 +33,25 @@
           >{{index}} , {{element.order}}</i>
         </div>
       </transition-group>
-    </draggable>-->
-    </div>
+    </draggable>
+    
   </div>
 </template>
 
 <script>
-//import draggable from "vuedraggable";
-import rowofcard from "./rowOfCard.vue";
+import draggable from "vuedraggable";
+//import rowofcard from "./rowOfCard.vue";
 const message = ["1", "2", "3", "4", "5", "6", "7", "8"];
 export default {
   name: "transition-example-2",
   display: "Transitions",
-  order: 7,
+  order: 6,
   components: {
-    //draggable,
-    rowofcard,
+    draggable,
+    //rowofcard,
   },
   data() {
-    const rowofcard = 3;
+    const rowofcard = 5;
     const mapped_list = message.map((name, index) => {
       return { name, order: index + 1 };
     });
@@ -59,17 +61,30 @@ export default {
     for (let i = 0; i < mapped_list.length; i += rowofcard) {
       let ed =
         i + rowofcard < mapped_list.length ? i + rowofcard : mapped_list.length;
-      mapped_sliced_list.push(mapped_list.slice(i, ed));
+      mapped_sliced_list.push({sublist: mapped_list.slice(i, ed), order: i + 1});
     }
 
     return {
-      list: mapped_sliced_list,
+      row_of_card: rowofcard,
+      list: mapped_list,
+      sublist:mapped_sliced_list,
       drag: false,
     };
   },
   methods: {
     sort() {
       this.list = this.list.sort((a, b) => a.order - b.order);
+
+      this.sublist = []
+      for (let i = 0; i < this.sublist.length; i += this.rowofcard) {
+        let ed =
+          i + this.rowofcard < this.list.length ? i + this.rowofcard : this.list.length;
+        this.sublist.push({sublist: this.list.slice(i, ed), order: i + 1});
+      }
+    },
+    show_list() {
+      console.log(this.list);
+      console.log(this.sublist);
     },
   },
   computed: {

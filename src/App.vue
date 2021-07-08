@@ -1,8 +1,5 @@
 <template>
-  <div id="hand">
-    <p>hand</p>
-    <transition></transition>
-  </div>
+  <transition></transition>
 </template>
 
 <script>
