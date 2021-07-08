@@ -20,7 +20,6 @@
           class="item col"
           v-for="(element, index) in list"
           :key="element.order"
-          @click="show_list"
           :class = "index % 5 == 0 ? 'item col-2 offset-1' : 'item col-2' "
         >
           <img src="../PM_Back.jpg" />
@@ -56,35 +55,23 @@ export default {
       return { name, order: index + 1 };
     });
 
-    const mapped_sliced_list = [];
+    //const mapped_sliced_list = [];
 
-    for (let i = 0; i < mapped_list.length; i += rowofcard) {
-      let ed =
-        i + rowofcard < mapped_list.length ? i + rowofcard : mapped_list.length;
-      mapped_sliced_list.push({sublist: mapped_list.slice(i, ed), order: i + 1});
-    }
+    //for (let i = 0; i < mapped_list.length; i += rowofcard) {
+    //  let ed =
+    //    i + rowofcard < mapped_list.length ? i + rowofcard : mapped_list.length;
+    //  mapped_sliced_list.push({sublist: mapped_list.slice(i, ed), order: i + 1});
+    //}
 
     return {
       row_of_card: rowofcard,
       list: mapped_list,
-      sublist:mapped_sliced_list,
       drag: false,
     };
   },
   methods: {
     sort() {
       this.list = this.list.sort((a, b) => a.order - b.order);
-
-      this.sublist = []
-      for (let i = 0; i < this.sublist.length; i += this.rowofcard) {
-        let ed =
-          i + this.rowofcard < this.list.length ? i + this.rowofcard : this.list.length;
-        this.sublist.push({sublist: this.list.slice(i, ed), order: i + 1});
-      }
-    },
-    show_list() {
-      console.log(this.list);
-      console.log(this.sublist);
     },
   },
   computed: {

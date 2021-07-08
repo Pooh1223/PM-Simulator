@@ -28,7 +28,7 @@ html,body{
 	height: 45vh;
 	min-height: var(--mnHt * 2);
 	max-height: var(--mxHt * 2);
-	font-size: 1.5em;
+	font-size: 1.4em;
 }
 
 .played-area {
@@ -72,6 +72,13 @@ html,body{
 	height: 100%;
 	/*min-height: calc(var(--mnHt) * 2);*/
 	background: skyblue;
+	overflow-y: auto;
+	font-size: 1rem;
+}
+
+/*remove scrollbar but keep its function ability*/
+#point-area::-webkit-scrollbar {
+    display: none;
 }
 
 
