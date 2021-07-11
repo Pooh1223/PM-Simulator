@@ -1,4 +1,5 @@
 <template>
+
   <div class="container">
     <!--<div class="row" v-for="mlist in list" :key="mlist.order">
       <rowofcard :card-map="mlist"></rowofcard>-->
@@ -30,16 +31,32 @@
             @click="element.fixed = !element.fixed"
             aria-hidden="true"
           >{{index}} , {{element.order}}</i>
+          <overlap></overlap>
         </div>
       </transition-group>
-    </draggable>
-    
+    </draggable>  
+    <div id="jizz" class="text-center my-3">
+
+      <b-button id="popover-target-1">
+        Hover Me
+      </b-button>
+      <b-popover target="popover-target-1" triggers="click" placement="left" title="Popover Title">
+        <span v-html="text"></span>
+      </b-popover>
+      <b-button v-b-popover.hover.top="'I am popover directive content!'" title="Popover Title">
+        Hover Me
+      </b-button>
+    </div>
   </div>
+
 </template>
 
 <script>
 import draggable from "vuedraggable";
 //import rowofcard from "./rowOfCard.vue";
+import overlap from "./overlapPopup.vue";
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css';
 const message = ["1", "2", "3", "4", "5", "6", "7", "8"];
 export default {
   name: "transition-example-2",
@@ -47,6 +64,7 @@ export default {
   order: 6,
   components: {
     draggable,
+    overlap,
     //rowofcard,
   },
   data() {
@@ -67,6 +85,7 @@ export default {
       row_of_card: rowofcard,
       list: mapped_list,
       drag: false,
+      text: "I am popover <b>component</b> content!",
     };
   },
   methods: {

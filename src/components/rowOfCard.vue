@@ -14,8 +14,9 @@
     >
       <div
         class="item col"
-        v-for="(element, index) in cardMap"
+        v-for="(element, index) in list"
         :key="element.order"
+        :class = "index % 5 == 0 ? 'item col-2 offset-1' : 'item col-2' "
       >
         <img src="../PM_Back.jpg" />
         <i
@@ -24,8 +25,7 @@
           "
           @click="element.fixed = !element.fixed"
           aria-hidden="true"
-          >{{ index }} , {{ element.order }}
-        </i>
+          ></i>
       </div>
     </transition-group>
   </draggable>
@@ -34,16 +34,21 @@
 <script>
 import draggable from "vuedraggable";
 
+const message = ["1", "2", "3", "4", "5", "6", "7", "8"];
+
 export default {
   name: "rowofcard",
   display: "rowofcards",
-  props: ["cardMap"],
   order: 7,
   components: {
     draggable,
   },
   data() {
+    const mapped_list = message.map((name, index) => {
+      return { name, order: index + 1 };
+    });
     return {
+      list: mapped_list,
       drag: false,
     };
   },
@@ -100,6 +105,3 @@ export default {
   opacity: 0;
 }
 </style>
-
-
-明天解決index永遠=排列順序的問題
