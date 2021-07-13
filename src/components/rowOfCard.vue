@@ -1,107 +1,44 @@
 <template>
-  <draggable
-    class="card-list"
-    tag="div"
-    v-model="mlist"
-    v-bind="dragOptions"
-    @start="drag = true"
-    @end="drag = false"
-  >
-    <transition-group
-      class="row"
-      type="transition"
-      :name="!drag ? 'flip-list' : null"
-    >
-      <div
-        class="item col"
-        v-for="(element, index) in list"
-        :key="element.order"
-        :class = "index % 5 == 0 ? 'item col-2 offset-1' : 'item col-2' "
-      >
-        <img src="../PM_Back.jpg" />
-        <i
-          :class="
-            element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'
-          "
-          @click="element.fixed = !element.fixed"
-          aria-hidden="true"
-          ></i>
-      </div>
-    </transition-group>
-  </draggable>
+  <div>
+    <b-button
+      v-b-modal.modal-no-backdrop
+      @click="showModal(i)">
+      Open modal
+    </b-button>
+
+    <b-modal :ref="'modal' + i"
+      id="modal-no-backdrop"
+      hide-backdrop
+      content-class="shadow"
+      title="BootstrapVue">
+      
+      <p class="my-2">
+        Test ,Test {{i}}
+      </p>
+    </b-modal>
+  </div>
 </template>
 
 <script>
-import draggable from "vuedraggable";
-
-const message = ["1", "2", "3", "4", "5", "6", "7", "8"];
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 export default {
-  name: "rowofcard",
-  display: "rowofcards",
-  order: 7,
-  components: {
-    draggable,
-  },
-  data() {
-    const mapped_list = message.map((name, index) => {
-      return { name, order: index + 1 };
-    });
-    return {
-      list: mapped_list,
-      drag: false,
-    };
-  },
+  name: "card-modal",
+  display: "card-modal",
+  props:["i"],
   methods: {
-    sort() {
-      this.list = this.list.sort((a, b) => a.order - b.order);
-    },
-  },
-  computed: {
-    dragOptions() {
-      return {
-        animation: 200,
-        group: "description",
-        disabled: false,
-        ghostClass: "ghost",
-      };
-    },
-  },
-};
+      showModal(i) {
+          console.log("jizzzzzzzzzzzzz!!!\n" + this.$refs);
+          console.log(this.$refs['modal' + i][0]);
+          this.$refs['modal' + i][0].show();
+      },
+      hideModal(i) {
+          this.$refs['modal' + i][0].hide();
+      }
+  }
+}
 </script>
 
 <style>
-.button {
-  margin-top: 35px;
-}
-.flip-list-move {
-  transition: transform 0.5s;
-}
-.no-move {
-  transition: transform 0s;
-}
-.ghost {
-  opacity: 0.5;
-  background: #c8ebfb;
-}
-
-.item {
-  cursor: move;
-  float: left;
-  //width: 50%;
-  //height: 300px;
-  background-image: url("../PM_Back.jpg");
-  background-size: 100%;
-  background-repeat: no-repeat;
-  //background-position: center;
-  padding: 0;
-}
-.item i {
-  cursor: pointer;
-}
-.item img {
-  vertical-align: top;
-  max-width: 100%;
-  opacity: 0;
-}
 </style>

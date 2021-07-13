@@ -2,8 +2,8 @@
   <popper
     trigger="click"
     :options="{
-      placement: 'bottom',
-      modifiers: { offset: { offset: '0,-10px' } },
+      placement: 'left',
+      modifiers: { offset: { offset: '200px,-10px' } },
       fallbackPlacements: ['bottom','right','left','top']
     }">
     <div class="popper">
@@ -17,14 +17,14 @@
 </template>
 
 <script>
-  import Popper from 'vue-popperjs';
-  import 'vue-popperjs/dist/vue-popper.css';
+import Popper from 'vue-popperjs';
+import 'vue-popperjs/dist/vue-popper.css';
 
-  export default {
-    components: {
-      'popper': Popper
-    },
-  }
+export default {
+  components: {
+    'popper': Popper
+  },
+}
 </script>
 
 <style>
@@ -33,6 +33,15 @@
   width: 200px;
   height: 300px;
   opacity: 80%;
+}
+
+button{
+  opacity: 30%;
+  width: 100%;
+}
+
+button[slot="reference"]{
+  font-size:0;
 }
 
 </style>
