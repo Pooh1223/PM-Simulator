@@ -1,9 +1,17 @@
 <template>
   <div class="container">
 
+    <dialog-drag
+      title="test dialog" id="d1"
+      v-if="showDialog"
+      :options="{ width:250,top:250 }"
+      @close="closeDialog">
+      <p>This is test id: {{from_which_card}}</p>
+    </dialog-drag>
+
     <b-modal 
       id="test-modal"
-      title="BootstrapVue"
+      title="Card-Detail"
       hide-backdrop
       :data="modalData">
       <p class="my-2">
@@ -25,10 +33,11 @@
       >
         
         <div
-          class="item col"
-          v-for="(element, index) in list"
-          :key="element.order"
           :class = "index % 5 == 0 ? 'item col-2 offset-1' : 'item col-2' "
+          v-for="(element, index) in list"
+          :key="'sa-' + index"
+          v-b-modal.test-modal
+          @click="openModal(element.order)"
         >
           <img src="../PM_Back.jpg" />
           <i
@@ -39,12 +48,14 @@
             aria-hidden="true"
           >{{index}} , {{element.order}}</i>
 
-          <b-button
-            v-b-modal.test-modal
-            @click="openModal(element.order)">
-            Open modal
-          </b-button>
-
+          <div class="text-center">
+            <b-button
+              id="overlap"
+              variant="outline-primary"
+              @click.stop="openDialog(element.order)">
+              Overlap
+            </b-button>
+          </div>
         </div>
       </transition-group>
     </draggable>  
@@ -54,6 +65,8 @@
 
 <script>
 import draggable from "vuedraggable";
+import DialogDrag from 'vue-dialog-drag';
+//import DropArea from 'vue-dialog-drag/dist/drop-area';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
@@ -64,6 +77,8 @@ export default {
   order: 6,
   components: {
     draggable,
+    DialogDrag,
+    //DropArea,
   },
   data() {
     const rowofcard = 5;
@@ -76,6 +91,8 @@ export default {
       list: mapped_list,
       drag: false,
       modalData: null,
+      showDialog: false,
+      from_which_card: null,
     };
   },
   methods: {
@@ -85,7 +102,16 @@ export default {
     openModal(data) {
       console.log("jizz:" + data);
       this.modalData = data;
-    }
+    },
+    openDialog (data) {
+      this.showDialog = true;
+      this.from_which_card = data;
+      console.log("it should open!");
+    },
+    closeDialog () {
+      this.showDialog = false;
+      console.log("it should close!");
+    },
   },
   computed: {
     dragOptions() {
@@ -137,4 +163,13 @@ export default {
   max-width: 100%;
   opacity: 0;
 }
+#overlap {
+  margin-bottom: 5px;
+}
 </style>
+
+<style src="vue-dialog-drag/dist/vue-dialog-drag.css"></style>
+<style src="vue-dialog-drag/dist/vue-drop-area.css"></style>
+
+<!-- optional dialog styles, see example -->
+<style src="vue-dialog-drag/dist/dialog-styles.css"></style>

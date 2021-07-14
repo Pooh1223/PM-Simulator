@@ -18,7 +18,7 @@
         <div
           class="item col"
           v-for="(element, index) in list"
-          :key="element.order"
+          :key="'ha-' + index"
           :class = "index % 5 == 0 ? 'item col-2 offset-1' : 'item col-2' "
         >
           <img src="../PM_Back.jpg" />

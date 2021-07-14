@@ -13,6 +13,7 @@
     "core-js": "^3.6.5",
     "v-tooltip": "^2.1.3",
     "vue": "^2.6.14",
+    "vue-dialog-drag": "^0.1.29",
     "vue-popperjs": "^2.3.0"
   },
   "devDependencies": {
