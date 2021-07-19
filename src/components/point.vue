@@ -17,12 +17,12 @@
           
           v-for="(element,index) in list"
           :key="element.order"
-          :class="index == 6 ? 'point last-point' : 'point'"
+          :class="index == list.length - 1 ? 'point last-point' : 'point'"
         >
           <div
             class="point-cards col"
           >
-            <img src="../PM_Back_Side.jpg" />
+            <img src="../PM_Back.jpg" />
             <i
               :class="
                 element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'
