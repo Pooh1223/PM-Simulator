@@ -1,13 +1,10 @@
 <template>
   <div class="container">
 
-    <dialog-drag
-      title="test dialog"
-      id="d1"
+    <!--<div
+      class="test-dialog"
       v-if="showDialog"
-      :options="{ width:250,top:250,pinned:pinDialog }"
-      @focus.self="occur"
-      @close="closeDialog">
+      style="background-color: white; position: relative">
       <p>This is test id: {{from_which_card}}</p>
 
       <draggable
@@ -43,7 +40,7 @@
           </div>
         </transition-group>
       </draggable>
-    </dialog-drag>
+    </div>-->
 
     <b-modal 
       id="card-detail"
@@ -90,6 +87,41 @@
             aria-hidden="true"
           >{{index}} , {{element.order}}</i>
 
+          <draggable
+            class="overlap-card-list"
+            tag="div"
+            v-model="list"
+            v-bind="dragOptions"
+            @start="drag = true"
+            @end="drag = false"
+            v-if="showDialog[element.order]"
+          >
+            <transition-group
+              class="row"
+              type="transition"
+              :name="!drag ? 'flip-list' : null"
+              style="margin:auto;"
+            >
+              
+              <div
+                class="item col-md-6" 
+                v-for="element in list"
+                :key="element.order"
+                v-b-modal.card-detail
+                @click="openModal(element.order)"
+              >
+                <img src="../PM_Back.jpg" />
+                <i
+                  :class="
+                    element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'
+                  "
+                  @click="element.fixed = !element.fixed"
+                  aria-hidden="true"
+                ></i>
+              </div>
+            </transition-group>
+          </draggable>
+
           <div class="text-center">
             <b-button
               id="overlap"
@@ -107,19 +139,21 @@
 
 <script>
 import draggable from "vuedraggable";
-import DialogDrag from 'vue-dialog-drag';
+//import DialogDrag from 'vue-dialog-drag';
 //import DropArea from 'vue-dialog-drag/dist/drop-area';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 const message = ["1", "2", "3", "4", "5", "6", "7", "8"];
+const showd = [false,false,false,false,false,false,false,false];
+
 export default {
   name: "main-area",
   display: "main-area",
   order: 6,
   components: {
     draggable,
-    DialogDrag,
+    //DialogDrag,
     //DropArea,
   },
   data() {
@@ -133,9 +167,8 @@ export default {
       list: mapped_list,
       drag: false,
       modalData: null,
-      showDialog: false,
+      showDialog: showd,
       from_which_card: null,
-      pinDialog: false,
     };
   },
   methods: {
@@ -144,10 +177,15 @@ export default {
       this.modalData = data;
     },
     openDialog (data) {
-      this.showDialog = true;
+      //this.showDialog[data] = !this.showDialog[data];
+      // vue can't detect an element changed or not in an array
+      this.showDialog = this.showDialog.map((el,i) => 
+        i === data ? !el : el
+      );
       this.from_which_card = data;
       console.log("it should open!");
       console.log(this.list);
+      console.log(this.showDialog);
     },
     closeDialog () {
       this.showDialog = false;
@@ -159,15 +197,6 @@ export default {
     },
     occur () {
       console.log('fire');
-    },
-    firePinned () {
-      this.pinDialog = true;
-      console.log("lock dialog while moving cards!");
-    },
-    dismissPinned () {
-      this.pinDialog = false;
-      this.drag = false;
-      console.log("unlock dialog while moving is finished");
     },
   },
   computed: {
@@ -233,7 +262,10 @@ export default {
 .overlap-card-list {
   min-height: 20px;
   max-width: 100%;
-  overflow-y: auto;
+  //overflow-y: auto;
+  //padding-right: 10px;
+  //padding-left: 10px;
+  box-sizing: border-box;
 }
 </style>
 
