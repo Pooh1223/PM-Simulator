@@ -5,6 +5,8 @@ import HandArea from "./components/HandArea.vue";
 import SupportArea from "./components/SupportArea.vue";
 import MainArea from "./components/MainArea.vue";
 import Point from "./components/Point.vue";
+import Deck from "./components/Deck.vue";
+import Discard from "./components/Discard.vue";
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
@@ -31,3 +33,11 @@ new Vue({
 new Vue({
   render: (h) => h(Point),
 }).$mount("#point-area > #points");
+
+new Vue({
+  render: (h) => h(Deck),
+}).$mount("#deck > #app");
+
+new Vue({
+  render: (h) => h(Discard),
+}).$mount("#discard-area > #app");

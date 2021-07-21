@@ -71,7 +71,7 @@ export default {
     openModal(data) {
       console.log("jizz:" + data);
       this.modalData = data;
-    }
+    },
   },
   computed: {
     dragOptions() {

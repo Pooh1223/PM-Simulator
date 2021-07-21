@@ -262,7 +262,7 @@ export default {
 .overlap-card-list {
   min-height: 20px;
   max-width: 100%;
-  //overflow-y: auto;
+  overflow-y: auto;
   //padding-right: 10px;
   //padding-left: 10px;
   box-sizing: border-box;
