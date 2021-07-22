@@ -7,6 +7,7 @@ import MainArea from "./components/MainArea.vue";
 import Point from "./components/Point.vue";
 import Deck from "./components/Deck.vue";
 import Discard from "./components/Discard.vue";
+import TempCard from "./components/TempCard.vue";
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
@@ -17,6 +18,9 @@ Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 
 Vue.config.productionTip = false;
+
+// use event bus
+Vue.prototype.$bus = new Vue();
 
 new Vue({
   render: (h) => h(HandArea),
@@ -41,3 +45,7 @@ new Vue({
 new Vue({
   render: (h) => h(Discard),
 }).$mount("#discard-area > #app");
+
+new Vue({
+  render: (h) => h(TempCard),
+}).$mount("#temp-card-place > #app");

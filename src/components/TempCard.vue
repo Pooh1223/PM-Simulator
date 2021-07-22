@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    
+    <strong> {{title_from}} </strong>
     <draggable
       class="card-list"
       tag="div"
@@ -19,7 +19,7 @@
           class="item col"
           v-for="(element, index) in list"
           :key="'ha-' + index"
-          :class = "index % 5 == 0 ? 'item col-2 offset-1' : 'item col-2' "
+          :class = "index % 10 == 0 ? 'item col-1' : 'item col-1' "
         >
           <img src="../PM_Back.jpg" />
           <i
@@ -28,7 +28,14 @@
             "
             @click="element.fixed = !element.fixed"
             aria-hidden="true"
-          >{{index}} , {{element.order}}</i>
+          >{{index}}</i>
+          <b-button
+            id="pick"
+            variant="outline-primary"
+            @click="alert('jizz')"
+            v-if="click_from_discard">
+            Pick
+          </b-button>
 
         </div>
       </transition-group>
@@ -42,7 +49,6 @@ import draggable from "vuedraggable";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
-const message = ["1", "2", "3", "4", "5", "6", "7", "8"];
 export default {
   name: "hand-area",
   display: "hand-area",
@@ -51,6 +57,12 @@ export default {
     draggable,
   },
   data() {
+    const message = [];
+
+    for(let i = 0;i < 50;++i){
+      message.push(toString(i + 1));
+    }
+
     const rowofcard = 5;
     const mapped_list = message.map((name, index) => {
       return { name, order: index + 1 };
@@ -60,8 +72,9 @@ export default {
       row_of_card: rowofcard,
       list: mapped_list,
       drag: false,
-      text: "I am popover <b>component</b> content!",
+      title_from: "jizzzzzzzzzzzzzzzzzzzzzz",
       modalData: null,
+      click_from_discard: false
     };
   },
   methods: {
@@ -83,6 +96,19 @@ export default {
       };
     },
   },
+  mounted() {
+    this.$bus.$on("open-from-deck",(msg) => {
+      this.title_from = msg;
+      this.click_from_discard = false;
+      console.log("temp: receive!");
+    });
+
+    this.$bus.$on("open-from-discard",(msg) => {
+      this.title_from = msg;
+      this.click_from_discard = true;
+      console.log("temp: receive!");
+    });
+  }
 };
 </script>
 

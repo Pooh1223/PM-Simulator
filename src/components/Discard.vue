@@ -24,6 +24,7 @@
           <div
             class="discard-cards"
             v-if="index == 0"
+            @click="openTemp"
           >
             <img src="../PM_Back.jpg" />
             <i
@@ -92,7 +93,12 @@ export default {
     isLastCard() {
       if(this.list.length == 1) return false;
       else return true;
-    }
+    },
+
+    openTemp() {
+      this.$bus.$emit("open-from-discard","Discard");
+      console.log("discard: sent!");
+    },
   },
   computed: {
     dragOptions() {
