@@ -24,7 +24,6 @@
           <div
             class="discard-cards"
             v-if="index == 0"
-            @click="openTemp"
           >
             <img src="../PM_Back.jpg" />
             <i
@@ -43,6 +42,7 @@
       id="discard-show"
       class="btn-block"
       variant="success"
+      @click="openTemp"
       >
       Show all
     </b-button>

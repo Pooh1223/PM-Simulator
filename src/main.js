@@ -5,9 +5,13 @@ import HandArea from "./components/HandArea.vue";
 import SupportArea from "./components/SupportArea.vue";
 import MainArea from "./components/MainArea.vue";
 import Point from "./components/Point.vue";
+
 import Deck from "./components/Deck.vue";
 import Discard from "./components/Discard.vue";
+import Excluded from "./components/Excluded.vue";
+import ExCard from "./components/ExCard.vue";
 import TempCard from "./components/TempCard.vue";
+
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
@@ -49,3 +53,11 @@ new Vue({
 new Vue({
   render: (h) => h(TempCard),
 }).$mount("#temp-card-place > #app");
+
+new Vue({
+  render: (h) => h(ExCard),
+}).$mount("#ex-deck > #app");
+
+new Vue({
+  render: (h) => h(Excluded),
+}).$mount("#excluded-area > #app");

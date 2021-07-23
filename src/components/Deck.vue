@@ -7,9 +7,10 @@
 
       <dialog-drag 
         id="dialog-1"
-        :options= "{x: 100,y: 100, buttonPin: false}"
+        :options= "{x: dialogX,y: dialogY,z: 3000, buttonPin: true,dragEnabled: false}"
         title="Options"
         v-if="showDialog"
+        @move="posLog"
         @close="toggleDialog">
 
         <div style="display:inline-block;">
@@ -18,6 +19,7 @@
             type="number"
             placeholder="number you want to draw"
             :state="validDraw"
+            @click.stop="shout"
             >
           </b-form-input>
         </div>
@@ -48,7 +50,7 @@
               Shuffle
           </b-button>
         </div>
-        
+
         <b-form-invalid-feedback id="input-live-feedback">
           Number should be larger than 0
         </b-form-invalid-feedback>
@@ -81,7 +83,8 @@ export default {
     return {
       showDialog: false,
       preText: 2,
-      test: "true",
+      dialogX: 500,
+      dialogY: 500,
     };
   },
   methods: {
@@ -89,9 +92,18 @@ export default {
       this.$bus.$emit("open-from-deck","Deck");
       console.log("deck: sent!");
     },
-    toggleDialog() {
+    toggleDialog(data) {
       this.showDialog = !this.showDialog;
+      console.log(data);
     },
+    shout() {
+      console.log("jizzzz");
+    },
+    posLog(data) {
+      this.dialogX = data.x;
+      this.dialogY = data.y;
+      console.log(data);
+    }
   },
   computed: {
     validDraw() {

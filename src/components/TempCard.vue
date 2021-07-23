@@ -33,7 +33,7 @@
             id="pick"
             variant="outline-primary"
             @click="alert('jizz')"
-            v-if="click_from_discard">
+            v-if="click_from_addable">
             Pick
           </b-button>
 
@@ -74,7 +74,7 @@ export default {
       drag: false,
       title_from: "jizzzzzzzzzzzzzzzzzzzzzz",
       modalData: null,
-      click_from_discard: false
+      click_from_addable: false
     };
   },
   methods: {
@@ -99,13 +99,25 @@ export default {
   mounted() {
     this.$bus.$on("open-from-deck",(msg) => {
       this.title_from = msg;
-      this.click_from_discard = false;
+      this.click_from_addable = false;
       console.log("temp: receive!");
     });
 
     this.$bus.$on("open-from-discard",(msg) => {
       this.title_from = msg;
-      this.click_from_discard = true;
+      this.click_from_addable = true;
+      console.log("temp: receive!");
+    });
+
+    this.$bus.$on("open-from-ex-deck",(msg) => {
+      this.title_from = msg;
+      this.click_from_addable = true;
+      console.log("temp: receive!");
+    });
+
+    this.$bus.$on("open-from-excluded",(msg) => {
+      this.title_from = msg;
+      this.click_from_addable = true;
       console.log("temp: receive!");
     });
   }
