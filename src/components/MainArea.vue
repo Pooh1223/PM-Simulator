@@ -62,6 +62,7 @@
       tag="div"
       v-model="list"
       v-bind="dragOptions"
+      :emptyInsertThreshold="150"
       @start="drag = true"
       @end="drag = false"
     >

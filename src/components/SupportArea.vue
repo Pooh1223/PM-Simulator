@@ -58,10 +58,11 @@
       </div>
     </b-modal>
     <draggable
-      class="card-list"
+      class="support-card-list"
       tag="div"
       v-model="list"
       v-bind="dragOptions"
+      :emptyInsertThreshold="150"
       @start="drag = true"
       @end="drag = false"
     >
@@ -226,7 +227,7 @@ export default {
   opacity: 0.5;
   background: #c8ebfb;
 }
-.card-list {
+.support-card-list {
   min-height: 20px;
   max-width: 100%;
 }

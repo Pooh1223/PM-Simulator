@@ -3,7 +3,7 @@
     <draggable
       class="discard-list"
       tag="div"
-      v-model="list"
+      v-model="card_list"
       v-bind="dragOptions"
       @start="drag = true"
       @end="drag = false"
@@ -18,7 +18,7 @@
       >
         <div
           class="discard"
-          v-for="(element,index) in list"
+          v-for="(element,index) in card_list"
           :key="'dis-' + index"
         >
           <div
@@ -52,7 +52,6 @@
 <script>
 import draggable from "vuedraggable";
 
-const message = ["1", "2", "3", "4", "5", "6", "7"];
 export default {
   name: "discard",
   display: "Discard",
@@ -61,44 +60,50 @@ export default {
     draggable,
   },
   data() {
+    const message = [];
+
+    for(let i = 0;i < 13;++i){
+      message.push(toString(i + 1));
+    }
+    
     const mapped_list = message.map((name, index) => {
       return { name, order: index + 1 };
     });
 
     return {
-      list: mapped_list,
+      card_list: mapped_list,
       first_card: mapped_list[0],
       drag: false,
     };
   },
   methods: {
-    sort() {
-      this.list = this.list.sort((a, b) => a.order - b.order);
-    },
     properAdd() {
       console.log(this.first_card);
 
-      if(this.first_card == this.list[0]){
-        [this.list[0],this.list[1]] = [this.list[1],this.list[0]];
+      if(this.first_card == this.card_list[0]){
+        // swap 2 element
+        [this.card_list[0],this.card_list[1]] = [this.card_list[1],this.card_list[0]];
       }
 
-      this.first_card = this.list[0];
+      this.first_card = this.card_list[0];
 
-      console.log(this.list);
+      console.log(this.card_list);
     },
     properRemove() {
       console.log("remove");
-      this.first_card = this.list[0];
+      this.first_card = this.card_list[0];
     },
     isLastCard() {
-      if(this.list.length == 1) return false;
+      if(this.card_list.length == 1) return false;
       else return true;
     },
 
     openTemp() {
-      this.$bus.$emit("open-from-discard","Discard");
+      this.$bus.$emit("open-from-discard","Discard",this.card_list);
       console.log("discard: sent!");
     },
+
+
   },
   computed: {
     dragOptions() {
@@ -110,6 +115,17 @@ export default {
       };
     },
   },
+  mounted() {
+    this.$bus.$on("add-to-discard",(id,card) => {
+      console.log("add card:" + card);
+      this.card_list.splice(id,0,card);
+    });
+
+    this.$bus.$on("remove-to-discard",(id) => {
+      console.log("remove " + id + "-th card");
+      this.card_list.splice(id,1);
+    });
+  }
 };
 </script>
 

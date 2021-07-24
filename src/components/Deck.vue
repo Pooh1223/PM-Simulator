@@ -1,7 +1,7 @@
 <template>
   <div class="container">
       <div class="deck-cards"
-        @click="openTemp">
+        @click="toggleDialog">
         <img src="../PM_Back.jpg" />
       </div>
 
@@ -13,37 +13,39 @@
         @move="posLog"
         @close="toggleDialog">
 
-        <div style="display:inline-block;">
-          <b-form-input
-            v-model="preText"
-            type="number"
-            placeholder="number you want to draw"
-            :state="validDraw"
-            @click.stop="shout"
-            >
-          </b-form-input>
-        </div>
+        <b-form-input
+          v-model="preText"
+          type="number"
+          placeholder="number you want to draw"
+          :state="validDraw"
+          @click.stop="shout"
+          >
+        </b-form-input>
         <div style="display:inline-block;">
           <b-button
+            class="btn-line"
             :disabled="preText <= 0"
             variant="outline-danger"
-            style="display:inline-block;"
             >
             Draw
           </b-button>
-        </div>
-
-        <div>
           <b-button
-              variant="outline-danger"
+            class="btn-line"
+            :disabled="preText <= 0"
+            variant="outline-danger"
               >
               Check top
           </b-button>
           <b-button
-              variant="outline-danger"
+            class="btn-line"
+            :disabled="preText <= 0"
+            variant="outline-danger"
               >
               Check bottom
           </b-button>
+        </div>
+
+        <div>
           <b-button
               variant="outline-danger"
               >
@@ -61,7 +63,7 @@
         id="deck-draw"
         class="btn-block"
         variant="success"
-        @click="toggleDialog"
+        @click="openTemp"
         >
         Draw
       </b-button>
@@ -80,7 +82,18 @@ export default {
     DialogDrag,
   },
   data() {
+    const message = [];
+
+    for(let i = 0;i < 25;++i){
+      message.push(toString(i + 1));
+    }
+    
+    const mapped_list = message.map((name, index) => {
+      return { name, order: index + 1 };
+    });
+
     return {
+      card_list: mapped_list,
       showDialog: false,
       preText: 2,
       dialogX: 500,
@@ -89,15 +102,12 @@ export default {
   },
   methods: {
     openTemp() {
-      this.$bus.$emit("open-from-deck","Deck");
+      this.$bus.$emit("open-from-deck","Deck",this.card_list);
       console.log("deck: sent!");
     },
     toggleDialog(data) {
       this.showDialog = !this.showDialog;
       console.log(data);
-    },
-    shout() {
-      console.log("jizzzz");
     },
     posLog(data) {
       this.dialogX = data.x;
@@ -111,6 +121,17 @@ export default {
       return this.preText > 0 ? true : false;
     }
   },
+  mounted() {
+    this.$bus.$on("add-to-deck",(id,card) => {
+      console.log("add card:" + card);
+      this.card_list.splice(id,0,card);
+    });
+
+    this.$bus.$on("remove-to-deck",(id) => {
+      console.log("remove " + id + "-th card");
+      this.card_list.splice(id,1);
+    });
+  }
 };
 </script>
 
@@ -138,6 +159,10 @@ export default {
 }
 #deck-opt {
   text-align: center;
+}
+
+.btn-line {
+  margin-right: 2px;
 }
 
 </style>

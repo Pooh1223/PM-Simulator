@@ -28,14 +28,25 @@ export default {
     //DialogDrag,
   },
   data() {
+    const message = [];
+
+    for(let i = 0;i < 15;++i){
+      message.push(toString(i + 1));
+    }
+    
+    const mapped_list = message.map((name, index) => {
+      return { name, order: index + 1 };
+    });
+
     return {
+      card_list: mapped_list,
       showDialog: false,
       preText: 2,
     };
   },
   methods: {
     openTemp() {
-      this.$bus.$emit("open-from-ex-deck","Ex-Deck");
+      this.$bus.$emit("open-from-ex-deck","Ex-Deck",this.card_list);
       console.log("ex-deck: sent!");
     },
     toggleDialog(data) {
@@ -45,6 +56,17 @@ export default {
   },
   computed: {
   },
+  mounted() {
+    this.$bus.$on("add-to-ex-deck",(id,card) => {
+      console.log("add card:" + card);
+      this.card_list.splice(id,0,card);
+    });
+
+    this.$bus.$on("remove-to-ex-deck",(id) => {
+      console.log("remove " + id + "-th card");
+      this.card_list.splice(id,1);
+    });
+  }
 };
 </script>
 
