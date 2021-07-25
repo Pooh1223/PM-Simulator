@@ -4,7 +4,7 @@
     <draggable
       class="card-list"
       tag="div"
-      v-model="list"
+      v-model="card_list"
       v-bind="dragOptions"
       @start="drag = true"
       @end="drag = false"
@@ -17,7 +17,7 @@
         
         <div
           class="item col"
-          v-for="(element, index) in list"
+          v-for="(element, index) in card_list"
           :key="'ha-' + index"
           :class = "index % 5 == 0 ? 'item col-2 offset-1' : 'item col-2' "
         >
@@ -58,16 +58,13 @@ export default {
 
     return {
       row_of_card: rowofcard,
-      list: mapped_list,
+      card_list: mapped_list,
       drag: false,
       text: "I am popover <b>component</b> content!",
       modalData: null,
     };
   },
   methods: {
-    sort() {
-      this.list = this.list.sort((a, b) => a.order - b.order);
-    },
     openModal(data) {
       console.log("jizz:" + data);
       this.modalData = data;
@@ -83,6 +80,13 @@ export default {
       };
     },
   },
+  mounted() {
+    this.$bus.$on("draw-from-deck",(drawn_card_list) => {
+      console.log("before update hand: " + this.card_list.length);
+      this.card_list = this.card_list.concat(drawn_card_list);
+      console.log("after update hand: " + this.card_list.length);
+    });
+  }
 };
 </script>
 

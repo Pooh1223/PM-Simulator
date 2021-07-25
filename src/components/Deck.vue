@@ -7,7 +7,7 @@
 
       <dialog-drag 
         id="dialog-1"
-        :options= "{x: dialogX,y: dialogY,z: 3000, buttonPin: true,dragEnabled: false}"
+        :options= "{x: dialogX,y: dialogY, buttonPin: true,dragEnabled: false}"
         title="Options"
         v-if="showDialog"
         @move="posLog"
@@ -26,6 +26,7 @@
             class="btn-line"
             :disabled="preText <= 0"
             variant="outline-danger"
+            @click="draw(preText)"
             >
             Draw
           </b-button>
@@ -113,6 +114,24 @@ export default {
       this.dialogX = data.x;
       this.dialogY = data.y;
       console.log(data);
+    },
+    draw(num) {
+
+      if(num > this.card_list.length){
+        num = this.card_list.length;
+      }
+
+      let temp_card_list = [];
+
+      for(let i = 0;i < num;++i){
+        temp_card_list.push(this.card_list[i]);
+      }
+
+      this.card_list.splice(0,num);
+
+      console.log(temp_card_list);
+
+      this.$bus.$emit("draw-from-deck",temp_card_list);
     }
   },
   computed: {
