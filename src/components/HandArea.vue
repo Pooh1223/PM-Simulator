@@ -82,9 +82,7 @@ export default {
   },
   mounted() {
     this.$bus.$on("draw-from-deck",(drawn_card_list) => {
-      console.log("before update hand: " + this.card_list.length);
       this.card_list = this.card_list.concat(drawn_card_list);
-      console.log("after update hand: " + this.card_list.length);
     });
   }
 };

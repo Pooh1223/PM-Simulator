@@ -1,17 +1,17 @@
 <template>
   <div class="container">
       <div class="deck-cards"
-        @click="toggleDialog">
+        @click="toggleMainDialog">
         <img src="../PM_Back.jpg" />
       </div>
 
       <dialog-drag 
         id="dialog-1"
-        :options= "{x: dialogX,y: dialogY, buttonPin: true,dragEnabled: false}"
+        :options= "{x: mainDialogX,y: mainDialogY}"
         title="Options"
-        v-if="showDialog"
-        @move="posLog"
-        @close="toggleDialog">
+        v-if="showMainDialog"
+        @move="posMainLog"
+        @close="toggleMainDialog">
 
         <b-form-input
           v-model="preText"
@@ -34,14 +34,16 @@
             class="btn-line"
             :disabled="preText <= 0"
             variant="outline-danger"
-              >
+            @click="toggleCheckDialog($event,'Top')"
+            >
               Check top
           </b-button>
           <b-button
             class="btn-line"
             :disabled="preText <= 0"
             variant="outline-danger"
-              >
+            @click="toggleCheckDialog($event,'Bottom')"
+            >
               Check bottom
           </b-button>
         </div>
@@ -49,6 +51,7 @@
         <div>
           <b-button
               variant="outline-danger"
+              @click="shuffle"
               >
               Shuffle
           </b-button>
@@ -58,6 +61,18 @@
           Number should be larger than 0
         </b-form-invalid-feedback>
 
+      </dialog-drag>
+
+      <dialog-drag
+        id="dialog-1"
+        class="dialog-3"
+        :options= "{x: checkDialogX,y: checkDialogY}"
+        title="Options"
+        v-if="showCheckDialog"
+        @pin="pinPos"
+        @drag-end="posCheckLog"
+        @close="toggleCheckDialog"
+        >
       </dialog-drag>
 
       <b-button
@@ -95,10 +110,13 @@ export default {
 
     return {
       card_list: mapped_list,
-      showDialog: false,
+      showMainDialog: false,
+      showCheckDialog: false,
       preText: 2,
-      dialogX: 500,
-      dialogY: 500,
+      mainDialogX: 500,
+      mainDialogY: 500,
+      checkDialogX: 550,
+      checkDialogY: 550,
     };
   },
   methods: {
@@ -106,15 +124,18 @@ export default {
       this.$bus.$emit("open-from-deck","Deck",this.card_list);
       console.log("deck: sent!");
     },
-    toggleDialog(data) {
-      this.showDialog = !this.showDialog;
+    toggleMainDialog(data) {
+      this.showMainDialog = !this.showMainDialog;
       console.log(data);
     },
-    posLog(data) {
-      this.dialogX = data.x;
-      this.dialogY = data.y;
+    posMainLog(data) {
+      this.mainDialogX = data.x;
+      this.mainDialogY = data.y;
       console.log(data);
     },
+
+    // functions in draw option
+
     draw(num) {
 
       if(num > this.card_list.length){
@@ -129,9 +150,42 @@ export default {
 
       this.card_list.splice(0,num);
 
-      console.log(temp_card_list);
-
       this.$bus.$emit("draw-from-deck",temp_card_list);
+    },
+    toggleCheckDialog(data,str) {
+      this.showCheckDialog = !this.showCheckDialog;
+      console.log(data);
+      console.log(str);
+    },
+    posCheckLog(data) {
+      this.checkDialogX = data.x;
+      this.checkDialogY = data.y;
+      console.log(data);
+    },
+    pinPos(data) {
+      console.log(data.pinned);
+      
+      if(data.pinned == true){
+        this.checkDialogX -= 48;
+        this.checkDialogY -= 48;
+      } else {
+        this.checkDialogX += 48;
+        this.checkDialogY += 48;
+      }
+      
+      console.log(data);
+    },
+    checkTop() {
+
+    },
+    checkBottom() {
+
+    },
+    shuffle() {
+      for(let i = this.card_list.length - 1;i > 0;--i){
+        let j = Math.floor(Math.random() * (i + 1));
+        [this.card_list[i],this.card_list[j]] = [this.card_list[j],this.card_list[i]];
+      }
     }
   },
   computed: {

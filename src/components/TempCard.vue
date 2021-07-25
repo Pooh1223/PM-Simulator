@@ -30,7 +30,7 @@
             "
             @click="element.fixed = !element.fixed"
             aria-hidden="true"
-          >{{index}}</i>
+          >{{index}},{{element.order}}</i>
           <!--<b-button
             id="pick"
             variant="outline-primary"
