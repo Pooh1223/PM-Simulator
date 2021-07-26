@@ -26,7 +26,7 @@
             class="btn-line"
             :disabled="preText <= 0"
             variant="outline-danger"
-            @click="draw(preText)"
+            @click="draw"
             >
             Draw
           </b-button>
@@ -64,15 +64,54 @@
       </dialog-drag>
 
       <dialog-drag
-        id="dialog-1"
+        id="check_list"
         class="dialog-3"
-        :options= "{x: checkDialogX,y: checkDialogY}"
-        title="Options"
+        :options= "{x: checkDialogX,y: checkDialogY,width: 250}"
+        :title="checkTitle"
         v-if="showCheckDialog"
+        @drag-start="drag_dialog=true"
         @pin="pinPos"
-        @drag-end="posCheckLog"
+        @move="posCheckLog"
         @close="toggleCheckDialog"
         >
+
+        <draggable
+          class="check-card-list"
+          tag="div"
+          v-model="checkCardList"
+          v-bind="dragOptions"
+          @start="dragCardStart"
+          @end="dragCardEnd"
+          style="width: 50%;"
+        >
+          <transition-group
+            class="row"
+            type="transition"
+            :name="!drag ? 'flip-list' : null"
+          >
+            
+            <div
+              class="check-item"
+              v-for="(element, index) in checkCardList"
+              :key="'chk-' + index"
+            >
+              <div class="check-cards">
+                <img src="../PM_Back.jpg" />
+                <i
+                  :class="
+                    element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'
+                  "
+                  @click="element.fixed = !element.fixed"
+                  aria-hidden="true"
+                  style="display: inline-block;"
+                >{{index}} , {{element.order}}</i>
+              </div>
+
+              <div class="w-100"></div>
+            </div>
+          </transition-group>
+        </draggable>
+
       </dialog-drag>
 
       <b-button
@@ -87,6 +126,7 @@
 </template>
 
 <script>
+import draggable from "vuedraggable";
 import 'bootstrap/dist/css/bootstrap.css';
 import DialogDrag from 'vue-dialog-drag';
 
@@ -95,6 +135,7 @@ export default {
   display: "Deck",
   order: 6,
   components: {
+    draggable,
     DialogDrag,
   },
   data() {
@@ -109,14 +150,22 @@ export default {
     });
 
     return {
+      drag: false,
+      after_drag_card: false,
+
       card_list: mapped_list,
       showMainDialog: false,
-      showCheckDialog: false,
       preText: 2,
       mainDialogX: 500,
       mainDialogY: 500,
+
+      showCheckDialog: false,
       checkDialogX: 550,
       checkDialogY: 550,
+      tempDialogX: 0,
+      tempDialogY: 0,
+      checkTitle: "1",
+      checkCardList: [],
     };
   },
   methods: {
@@ -131,12 +180,13 @@ export default {
     posMainLog(data) {
       this.mainDialogX = data.x;
       this.mainDialogY = data.y;
-      console.log(data);
+      //console.log(data);
     },
 
     // functions in draw option
 
-    draw(num) {
+    draw() {
+      let num = this.preText;
 
       if(num > this.card_list.length){
         num = this.card_list.length;
@@ -154,17 +204,45 @@ export default {
     },
     toggleCheckDialog(data,str) {
       this.showCheckDialog = !this.showCheckDialog;
+
+      this.checkTitle = str;
+
+      switch(str){
+        case "Top":
+          this.checkTop();
+          break;
+        case "Bottom":
+          this.checkBottom();
+          break;
+      }
+
       console.log(data);
       console.log(str);
     },
     posCheckLog(data) {
-      this.checkDialogX = data.x;
-      this.checkDialogY = data.y;
+      // track position only when not dragging cards
+
+      if(this.drag == false){
+        this.checkDialogX = data.x;
+        this.checkDialogY = data.y;
+      }
+
+      if(this.after_drag_card == true){
+        this.after_drag_card = false;
+        this.checkDialogX = this.tempDialogX;
+        this.checkDialogY = this.tempDialogY;
+      }
+
+      console.log("move");
       console.log(data);
+      //console.log(this.drag);
+      //console.log(this.drag_dialog);
     },
     pinPos(data) {
       console.log(data.pinned);
-      
+
+      // the pinned dialog has a margin around it
+
       if(data.pinned == true){
         this.checkDialogX -= 48;
         this.checkDialogY -= 48;
@@ -173,10 +251,35 @@ export default {
         this.checkDialogY += 48;
       }
       
+      console.log("pin");
       console.log(data);
     },
-    checkTop() {
+    dragCardStart() {
+      this.drag = true;
+      this.tempDialogX = this.checkDialogX;
+      this.tempDialogY = this.checkDialogY;
 
+      console.log("start");
+      console.log(this.tempDialogX + " " + this.tempDialogY);
+    },
+    dragCardEnd() {
+      this.drag = false;
+      this.checkDialogX = this.tempDialogX;
+      this.checkDialogY = this.tempDialogY;
+
+      this.after_drag_card = true;
+
+      console.log("end");
+      console.log(this.tempDialogX + " " + this.tempDialogY);
+    },
+    checkTop() {
+      let num = this.preText;
+
+      if(num > this.card_list.length){
+        num = this.card_list.length;
+      }
+
+      this.checkCardList = this.card_list.slice(0,num);
     },
     checkBottom() {
 
@@ -189,10 +292,18 @@ export default {
     }
   },
   computed: {
+    dragOptions() {
+      return {
+        animation: 200,
+        group: "description",
+        disabled: false,
+        ghostClass: "ghost",
+      };
+    },
     validDraw() {
       console.log(this.preText);
       return this.preText > 0 ? true : false;
-    }
+    },
   },
   mounted() {
     this.$bus.$on("add-to-deck",(id,card) => {
@@ -233,9 +344,28 @@ export default {
 #deck-opt {
   text-align: center;
 }
-
 .btn-line {
   margin-right: 2px;
+}
+#check_list {
+  //overflow-y: auto;
+  //overflow: scroll;
+}
+.check-cards {
+  cursor: click;
+  float: left;
+  //width: 50%;
+  //height: 300px;
+  background-image: url("../PM_Back.jpg");
+  background-size: 100%;
+  background-repeat: no-repeat;
+  //background-position: center;
+  padding-bottom: 5px;
+}
+.check-cards img {
+  vertical-align: top;
+  max-width: 100%;
+  opacity: 0;
 }
 
 </style>
