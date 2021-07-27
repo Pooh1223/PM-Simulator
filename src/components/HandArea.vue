@@ -84,6 +84,14 @@ export default {
     this.$bus.$on("draw-from-deck",(drawn_card_list) => {
       this.card_list = this.card_list.concat(drawn_card_list);
     });
+
+    this.$bus.$on("check-top-to-hand",(card) => {
+      this.card_list.push(card);
+    });
+
+    this.$bus.$on("check-bottom-to-hand",(card) => {
+      this.card_list.push(card);
+    });
   }
 };
 </script>

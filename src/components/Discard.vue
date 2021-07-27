@@ -125,6 +125,16 @@ export default {
       console.log("remove " + id + "-th card");
       this.card_list.splice(id,1);
     });
+
+    this.$bus.$on("check-top-to-discard",(card) => {
+      this.card_list.push(card);
+      console.log(this.card_list);
+    });
+
+    this.$bus.$on("check-bottom-to-discard",(card) => {
+      this.card_list.push(card);
+      console.log(this.card_list);
+    });
   }
 };
 </script>

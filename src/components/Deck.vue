@@ -75,6 +75,25 @@
         @close="toggleCheckDialog"
         >
 
+        <b-button
+          variant="outline-primary"
+          style="width: 100%;"
+          >
+          Return top
+        </b-button>
+        <b-button
+          variant="outline-primary"
+          style="width: 100%;"
+          >
+          Return bottom
+        </b-button>
+        <b-button
+          variant="outline-primary"
+          style="width: 100%;"
+          >
+          Return and Shuffle
+        </b-button>
+
         <draggable
           class="check-card-list"
           tag="div"
@@ -114,18 +133,17 @@
                 >
                 <b-button
                   variant="outline-primary"
-                  @click="shuffle"
+                  @click="toHand(index)"
                   style="width: 100%;"
                   >
-                  Add
+                  Add, {{index}}
                 </b-button>
                 <b-button
-                  class="justify-content-center"
                   variant="outline-primary"
-                  @click="shuffle"
+                  @click="toDiscard(index)"
                   style="width: 100%; padding-left: 0; padding-right: 0;"
                   >
-                  Discard
+                  Discard , {{index}}
                 </b-button>
               </div>
 
@@ -303,7 +321,66 @@ export default {
       this.checkCardList = this.card_list.slice(0,num);
     },
     checkBottom() {
+      let num = this.preText;
 
+      if(num > this.card_list.length){
+        num = this.card_list.length;
+      }
+
+      this.checkCardList = this.card_list.slice(this.card_list.length - num,this.card_list.length);
+    },
+    toHand(id) {
+
+      let dis_id = this.card_list.length - this.preText + id;
+      let selected = this.checkTitle == "Top" ? this.card_list[id] : this.card_list[dis_id];
+
+      switch(this.checkTitle){
+        case "Top":
+          // remove both check card list and card list
+          this.checkCardList.splice(id,1);
+          this.card_list.splice(id,1);
+
+          // emit to hand to add card
+          this.$bus.$emit("check-top-to-hand",selected);
+
+          break;
+
+        case "Bottom":
+          // remove both check card list and card list
+          this.checkCardList.splice(id,1);
+          this.card_list.splice(id,1);
+
+          // emit to hand to add card
+          this.$bus.$emit("check-bottom-to-hand",selected);
+
+          break;
+      }
+    },
+    toDiscard(id) {
+      let dis_id = this.card_list.length - this.preText + id;
+      let selected = this.checkTitle == "Top" ? this.card_list[id] : this.card_list[dis_id];
+
+      switch(this.checkTitle){
+        case "Top":
+          // remove both check card list and card list
+          this.checkCardList.splice(id,1);
+          this.card_list.splice(id,1);
+
+          // emit to hand to add card
+          this.$bus.$emit("check-top-to-discard",selected);
+
+          break;
+
+        case "Bottom":
+          // remove both check card list and card list
+          this.checkCardList.splice(id,1);
+          this.card_list.splice(id,1);
+
+          // emit to hand to add card
+          this.$bus.$emit("check-bottom-to-discard",selected);
+
+          break;
+      }
     },
     shuffle() {
       for(let i = this.card_list.length - 1;i > 0;--i){

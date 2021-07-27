@@ -146,6 +146,7 @@ export default {
     });
 
     this.$bus.$on("open-from-discard",(msg,card_list) => {
+      console.log("jizz! " + msg);
       this.title_from = msg;
       this.card_list = card_list;
       this.click_from_addable = true;
