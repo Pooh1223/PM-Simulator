@@ -82,20 +82,22 @@
           v-bind="dragOptions"
           @start="dragCardStart"
           @end="dragCardEnd"
-          style="width: 50%;"
         >
           <transition-group
-            class="row"
             type="transition"
             :name="!drag ? 'flip-list' : null"
           >
             
             <div
-              class="check-item"
+              class="check-item row"
               v-for="(element, index) in checkCardList"
               :key="'chk-' + index"
             >
-              <div class="check-cards">
+              <div
+                class="check-cards col-6"
+                align="center"
+                style="height: 100%; display: inline-block;">
+
                 <img src="../PM_Back.jpg" />
                 <i
                   :class="
@@ -103,11 +105,30 @@
                   "
                   @click="element.fixed = !element.fixed"
                   aria-hidden="true"
-                  style="display: inline-block;"
                 >{{index}} , {{element.order}}</i>
               </div>
+              
+              <div
+                class="col-6 my-auto"
+                style="display: inline-block;"
+                >
+                <b-button
+                  variant="outline-primary"
+                  @click="shuffle"
+                  style="width: 100%;"
+                  >
+                  Add
+                </b-button>
+                <b-button
+                  class="justify-content-center"
+                  variant="outline-primary"
+                  @click="shuffle"
+                  style="width: 100%; padding-left: 0; padding-right: 0;"
+                  >
+                  Discard
+                </b-button>
+              </div>
 
-              <div class="w-100"></div>
             </div>
           </transition-group>
         </draggable>
@@ -233,8 +254,8 @@ export default {
         this.checkDialogY = this.tempDialogY;
       }
 
-      console.log("move");
-      console.log(data);
+      //console.log("move");
+      //console.log(data);
       //console.log(this.drag);
       //console.log(this.drag_dialog);
     },
@@ -259,8 +280,8 @@ export default {
       this.tempDialogX = this.checkDialogX;
       this.tempDialogY = this.checkDialogY;
 
-      console.log("start");
-      console.log(this.tempDialogX + " " + this.tempDialogY);
+      //console.log("start");
+      //console.log(this.tempDialogX + " " + this.tempDialogY);
     },
     dragCardEnd() {
       this.drag = false;
@@ -269,8 +290,8 @@ export default {
 
       this.after_drag_card = true;
 
-      console.log("end");
-      console.log(this.tempDialogX + " " + this.tempDialogY);
+      //console.log("end");
+      //console.log(this.tempDialogX + " " + this.tempDialogY);
     },
     checkTop() {
       let num = this.preText;
