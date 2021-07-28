@@ -7,10 +7,12 @@
       v-model="card_list"
       v-bind="dragOptions"
       @start="drag = true"
-      @end="test"
+      @end="drop"
+      @unchoose="shout"
       :move="dropArea"
     >
       <transition-group
+        id="hands"
         class="row"
         type="transition"
         :name="!drag ? 'flip-list' : null"
@@ -24,9 +26,6 @@
         >
           <img src="../PM_Back.jpg" />
           <i
-            :class="
-              element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'
-            "
             @click="element.fixed = !element.fixed"
             aria-hidden="true"
           >{{index}} , {{element.order}}</i>
@@ -78,27 +77,39 @@ export default {
 
       this.lastPlace = place.to.getAttribute("id");
 
-      if(place.to.getAttribute("id") == "discards"){
-        //console.log(place.draggedContext.index);
-        
+      if(place.to.getAttribute("id") == "deck"){
         this.lastPlaceId = place.draggedContext.index;
-
         return false;
+      } else if(place.to.getAttribute("id") == "discards"){
+        this.lastPlaceId = place.draggedContext.index;
+        return false;
+      } else if(place.to.getAttribute("id") == "hands"){
+        this.lastPlaceId = place.draggedContext.index;
+        return true;
       } else {
         return true;
       }
     },
-    test() {
+    drop(data) {
       this.drag = false;
 
-      if(this.lastPlace == "discards"){
+      if(this.lastPlace == "deck") {
         let dropCard = this.card_list[this.lastPlaceId];
-        this.card_list.splice(this.lastPlaceId,1);
-        this.$bus.$emit("hand-to-discard",dropCard,this.lastPlaceId);
+        //this.card_list.splice(this.lastPlaceId,1);
+        this.$bus.$emit("hand-to-deck",dropCard);
+      } else if(this.lastPlace == "discards"){
+        let dropCard = this.card_list[this.lastPlaceId];
+        //this.card_list.splice(this.lastPlaceId,1);
+        this.$bus.$emit("hand-to-discard",dropCard);
       }
 
       console.log("test");
+      console.log(data);
     },
+    shout(data) {
+      console.log("shout");
+      console.log(data);
+    }
   },
   computed: {
     dragOptions() {
@@ -122,6 +133,10 @@ export default {
     this.$bus.$on("check-bottom-to-hand",(card) => {
       this.card_list.push(card);
     });
+
+    this.$bus.$on("hand-able-to-remove",() => {
+      this.card_list.splice(this.lastPlaceId,1);
+    });
   }
 };
 </script>
@@ -137,8 +152,11 @@ export default {
   transition: transform 0s;
 }
 .ghost {
-  opacity: 0.5;
+  opacity: 1;
   background: #c8ebfb;
+}
+.sortable-chosen {
+  opacity: 1;
 }
 .card-list {
   min-height: 20px;

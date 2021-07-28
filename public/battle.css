@@ -115,14 +115,14 @@ html,body{
     display: none;
 }
 
-#deck {
+#deck-area {
 	float: left;
 	width: 50%;
 	height: 50%;
 	background: orange;
 }
 
-#ex-deck {
+#ex-deck-area {
 	float: right;
 	width: 50%;
 	height: 50%;

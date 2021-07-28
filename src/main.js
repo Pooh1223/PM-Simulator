@@ -44,7 +44,7 @@ new Vue({
 
 new Vue({
   render: (h) => h(Deck),
-}).$mount("#deck > #app");
+}).$mount("#deck-area > #app");
 
 new Vue({
   render: (h) => h(Discard),
@@ -56,7 +56,7 @@ new Vue({
 
 new Vue({
   render: (h) => h(ExCard),
-}).$mount("#ex-deck > #app");
+}).$mount("#ex-deck-area > #app");
 
 new Vue({
   render: (h) => h(Excluded),

@@ -1,9 +1,47 @@
 <template>
   <div class="container">
-      <div class="deck-cards"
+      <!--<div class="deck-cards"
         @click="toggleMainDialog">
         <img src="../PM_Back.jpg" />
-      </div>
+      </div>-->
+
+      <draggable
+        class="deck-list"
+        tag="div"
+        v-model="card_list"
+        v-bind="dragOptions"
+        @start="drag = true"
+        @end="drag = false"
+        :move="isLastCard"
+        >
+        <transition-group
+          id="deck"
+          type="transition"
+          :name="!drag ? 'flip-list' : null"
+        >
+          <div
+            class="deck"
+            v-for="(element,index) in card_list"
+            :key="'de-' + index"
+          >
+            <div
+              class="deck-cards"
+              v-if="index == 0"
+              @click="toggleMainDialog"
+              >
+                <img src="../PM_Back.jpg" />
+                <i
+                  :class="
+                    element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'
+                  "
+                  @click="element.fixed = !element.fixed"
+                  aria-hidden="true"
+                ></i>
+            </div>
+            
+          </div>
+        </transition-group>
+      </draggable>
 
       <dialog-drag 
         id="dialog-1"
@@ -62,6 +100,8 @@
         </b-form-invalid-feedback>
 
       </dialog-drag>
+
+
 
       <dialog-drag
         id="check_list"
@@ -429,7 +469,12 @@ export default {
     },
     disableMove() {
       return false;
-    }
+    },
+    isLastCard() {
+      //if(this.card_list.length == 1) return false;
+      //else return true;
+      return false;
+    },
   },
   computed: {
     dragOptions() {
@@ -455,13 +500,30 @@ export default {
       console.log("remove " + id + "-th card");
       this.card_list.splice(id,1);
     });
+
+    this.$bus.$on("hand-to-deck",(card) => {
+      this.card_list.unshift(card);
+      console.log(this.card_list);
+    });
   }
 };
 </script>
 
 <style>
-
-.deck-cards {
+.button {
+  margin-top: 35px;
+}
+.flip-list-move {
+  transition: transform 0.5s;
+}
+.no-move {
+  transition: transform 0s;
+}
+.ghost {
+  opacity: 0.5;
+  background: #c8ebfb;
+}
+.deck {
   cursor: click;
   float: left;
   //width: 50%;
@@ -470,12 +532,15 @@ export default {
   background-size: 100%;
   background-repeat: no-repeat;
   //background-position: center;
-  padding-bottom: 5px;
+  padding: 1px;
 }
-.deck-cards img {
+.deck img {
   vertical-align: top;
   max-width: 100%;
   opacity: 0;
+}
+.deck-cards {
+  padding: 0px;
 }
 #deck-draw {
   padding-bottom: 10px;

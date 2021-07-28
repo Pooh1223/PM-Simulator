@@ -7,8 +7,6 @@
       v-bind="dragOptions"
       @start="drag = true"
       @end="drag = false"
-      @add="properAdd"
-      @remove="properRemove"
       :move="isLastCard"
     >
       <transition-group
@@ -20,6 +18,7 @@
           class="discard"
           v-for="(element,index) in card_list"
           :key="'dis-' + index"
+          @mouseenter="stay(dragCard)"
         >
           <div
             class="discard-cards"
@@ -74,25 +73,12 @@ export default {
       card_list: mapped_list,
       first_card: mapped_list[0],
       drag: false,
+      properDrop: false,
+      dragCard: null,
     };
   },
   methods: {
-    properAdd() {
-      console.log(this.first_card);
 
-      if(this.first_card == this.card_list[0]){
-        // swap 2 element
-        [this.card_list[0],this.card_list[1]] = [this.card_list[1],this.card_list[0]];
-      }
-
-      this.first_card = this.card_list[0];
-
-      console.log(this.card_list);
-    },
-    properRemove() {
-      console.log("remove");
-      this.first_card = this.card_list[0];
-    },
     isLastCard() {
       //if(this.card_list.length == 1) return false;
       //else return true;
@@ -103,7 +89,16 @@ export default {
       this.$bus.$emit("open-from-discard","Discard",this.card_list);
       console.log("discard: sent!");
     },
-
+    stay(card) {
+      if(this.properDrop == true){
+        this.$bus.$emit("hand-able-to-remove");
+        this.card_list.unshift(card);
+        console.log("yes");
+      } else {
+        console.log("no");
+      }
+      this.properDrop = false;
+    },
 
   },
   computed: {
@@ -138,7 +133,10 @@ export default {
     });
 
     this.$bus.$on("hand-to-discard",(card) => {
-      this.card_list.unshift(card);
+      //this.card_list.unshift(card);
+      this.properDrop = true;
+      this.dragCard = card;
+      //this.stay(card);
       console.log(this.card_list);
     });
   }
