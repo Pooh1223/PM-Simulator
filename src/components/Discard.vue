@@ -137,6 +137,9 @@ export default {
       this.properDrop = true;
       this.dragCard = card;
       //this.stay(card);
+      setTimeout(() => {
+        this.properDrop = false;
+      },50);
       console.log(this.card_list);
     });
   }
