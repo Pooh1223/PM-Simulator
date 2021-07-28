@@ -51,7 +51,7 @@
         <div>
           <b-button
               variant="outline-danger"
-              @click="shuffle"
+              @click="shuffle('deck')"
               >
               Shuffle
           </b-button>
@@ -77,18 +77,21 @@
 
         <b-button
           variant="outline-primary"
+          @click="returnTop"
           style="width: 100%;"
           >
           Return top
         </b-button>
         <b-button
           variant="outline-primary"
+          @click="returnBottom"
           style="width: 100%;"
           >
           Return bottom
         </b-button>
         <b-button
           variant="outline-primary"
+          @click="shuffle('check')"
           style="width: 100%;"
           >
           Return and Shuffle
@@ -101,6 +104,7 @@
           v-bind="dragOptions"
           @start="dragCardStart"
           @end="dragCardEnd"
+          :move="disableMove"
         >
           <transition-group
             type="transition"
@@ -136,14 +140,14 @@
                   @click="toHand(index)"
                   style="width: 100%;"
                   >
-                  Add, {{index}}
+                  Hand
                 </b-button>
                 <b-button
                   variant="outline-primary"
                   @click="toDiscard(index)"
                   style="width: 100%; padding-left: 0; padding-right: 0;"
                   >
-                  Discard , {{index}}
+                  Discard
                 </b-button>
               </div>
 
@@ -255,8 +259,8 @@ export default {
           break;
       }
 
-      console.log(data);
-      console.log(str);
+      console.log("check dialog: " + data);
+      //console.log(str);
     },
     posCheckLog(data) {
       // track position only when not dragging cards
@@ -382,11 +386,49 @@ export default {
           break;
       }
     },
-    shuffle() {
+    returnTop() {
+      switch(this.checkTitle){
+        case "Top":
+          // nothing need to do
+          break;
+        case "Bottom":
+          // shift will pop the first element and return it
+          for(let i = 0;i < this.preText;++i){
+            this.card_list.unshift(this.card_list.pop());
+          }
+          break;
+      }
+
+      this.toggleCheckDialog();
+    },
+    returnBottom() {
+      switch(this.checkTitle){
+        case "Top":
+          // shift will pop the first element and return it
+          for(let i = 0;i < this.preText;++i){
+            this.card_list.push(this.card_list.shift());
+          }
+
+          break;
+        case "Bottom":
+          // nothing need to do
+          break;
+      }
+
+      this.toggleCheckDialog();
+    },
+    shuffle(where) {
       for(let i = this.card_list.length - 1;i > 0;--i){
         let j = Math.floor(Math.random() * (i + 1));
         [this.card_list[i],this.card_list[j]] = [this.card_list[j],this.card_list[i]];
       }
+
+      if(where == "check"){
+        this.toggleCheckDialog();
+      }
+    },
+    disableMove() {
+      return false;
     }
   },
   computed: {

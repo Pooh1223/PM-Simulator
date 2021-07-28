@@ -7,7 +7,8 @@
       v-model="card_list"
       v-bind="dragOptions"
       @start="drag = true"
-      @end="drag = false"
+      @end="test"
+      :move="dropArea"
     >
       <transition-group
         class="row"
@@ -62,12 +63,41 @@ export default {
       drag: false,
       text: "I am popover <b>component</b> content!",
       modalData: null,
+      lastPlace: null,
+      lastPlaceId: 0,
     };
   },
   methods: {
     openModal(data) {
       console.log("jizz:" + data);
       this.modalData = data;
+    },
+    dropArea(place){
+      console.log("move");
+      console.log(place);
+
+      this.lastPlace = place.to.getAttribute("id");
+
+      if(place.to.getAttribute("id") == "discards"){
+        //console.log(place.draggedContext.index);
+        
+        this.lastPlaceId = place.draggedContext.index;
+
+        return false;
+      } else {
+        return true;
+      }
+    },
+    test() {
+      this.drag = false;
+
+      if(this.lastPlace == "discards"){
+        let dropCard = this.card_list[this.lastPlaceId];
+        this.card_list.splice(this.lastPlaceId,1);
+        this.$bus.$emit("hand-to-discard",dropCard,this.lastPlaceId);
+      }
+
+      console.log("test");
     },
   },
   computed: {

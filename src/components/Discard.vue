@@ -12,7 +12,7 @@
       :move="isLastCard"
     >
       <transition-group
-        
+        id="discards"
         type="transition"
         :name="!drag ? 'flip-list' : null"
       >
@@ -94,8 +94,9 @@ export default {
       this.first_card = this.card_list[0];
     },
     isLastCard() {
-      if(this.card_list.length == 1) return false;
-      else return true;
+      //if(this.card_list.length == 1) return false;
+      //else return true;
+      return false;
     },
 
     openTemp() {
@@ -133,6 +134,11 @@ export default {
 
     this.$bus.$on("check-bottom-to-discard",(card) => {
       this.card_list.push(card);
+      console.log(this.card_list);
+    });
+
+    this.$bus.$on("hand-to-discard",(card) => {
+      this.card_list.unshift(card);
       console.log(this.card_list);
     });
   }
