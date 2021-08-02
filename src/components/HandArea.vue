@@ -115,7 +115,7 @@ export default {
       let dropCard = this.dragCard;
 
       // ms for re-set properDrop 
-      let disable_first_drop = 50;
+      let disable_first_drop = 70;
 
       if(this.lastPlace == "decks") {
 
@@ -146,8 +146,22 @@ export default {
               this.$bus.$emit("cancel-stack-drop",data.to.getAttribute("area-name"),data.newDraggableIndex);
 
               // case when temp area is the same with stack
-              if(data.to.getAttribute("area-name") == "Deck"){
-                this.$bus.$emit("add-to-deck-again",this.dragCard);
+              // since we use openTemp to refresh the list
+              // need to check whether the area-name is same with lastPlace
+
+              switch(this.lastPlace){
+                case "decks":
+                  this.$bus.$emit("add-to-deck-again",this.dragCard,data.to.getAttribute("area-name"));
+                  break;
+                case "discards":
+                  this.$bus.$emit("add-to-discard-again",this.dragCard,data.to.getAttribute("area-name"));
+                  break;
+                case "ex-decks":
+                  this.$bus.$emit("add-to-ex-deck-again",this.dragCard,data.to.getAttribute("area-name"));
+                  break;
+                case "excludeds":
+                  this.$bus.$emit("add-to-excluded-again",this.dragCard,data.to.getAttribute("area-name"));
+                  break;
               }
 
               break;
@@ -156,7 +170,7 @@ export default {
           console.log("hand to deck error");
         }
 
-        this.$bus.$emit("hand-to-deck",dropCard);
+        this.$bus.$emit("hand-to-deck",dropCard,disable_first_drop);
         console.log("emit dropCard to deck");
 
       } else if(this.lastPlace == "discards"){

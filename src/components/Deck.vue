@@ -526,9 +526,9 @@ export default {
 
       setTimeout(() => {
         this.properDrop = false;
-        //console.log("set properDrop to false");
       },ms);
 
+      console.log("ms: " + ms);
       console.log(this.card_list);
     });
 
@@ -583,11 +583,13 @@ export default {
     });
 
     // re-add
-    this.$bus.$on("add-to-deck-again",(card) => {
+    this.$bus.$on("add-to-deck-again",(card,area) => {
       this.card_list.unshift(card);
       
-      // force to update temp area
-      this.openTemp();
+      // whether temp need to update 
+      if(area == "Deck"){
+        this.openTemp();
+      }
 
       console.log("Re-add-to-deck!");
     });

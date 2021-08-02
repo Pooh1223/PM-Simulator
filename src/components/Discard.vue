@@ -195,11 +195,13 @@ export default {
     });
 
     // re-add
-    this.$bus.$on("add-to-discard-again",(card) => {
+    this.$bus.$on("add-to-discard-again",(card,area) => {
       this.card_list.unshift(card);
       
-      // force to update temp area
-      this.openTemp();
+      // whether temp need to update 
+      if(area == "Discard"){
+        this.openTemp();
+      }
 
       console.log("Re-add-to-discard!");
     });
