@@ -164,6 +164,32 @@ export default {
       },50);
       console.log(this.card_list);
     });
+
+    // cancel 
+
+    this.$bus.$on("cancel-stack-drop",(area,id) => {
+
+      if(area == "Excluded"){
+        console.log("id:" + id);
+
+        this.card_list.splice(id,1);
+        this.properDrop = false;
+        this.openTemp();
+        console.log("excluded: delete! " + id);
+      }
+    });
+
+    // re-add
+    this.$bus.$on("add-to-excluded-again",(card,area) => {
+      this.card_list.unshift(card);
+      
+      // whether temp need to update 
+      if(area == "Excluded"){
+        this.openTemp();
+      }
+
+      console.log("Re-add-to-excluded!");
+    });
   }
 };
 </script>
