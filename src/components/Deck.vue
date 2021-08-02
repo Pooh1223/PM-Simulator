@@ -519,7 +519,7 @@ export default {
 
     // drop
 
-    this.$bus.$on("hand-to-deck",(card) => {
+    this.$bus.$on("hand-to-deck",(card,ms) => {
       this.properDrop = true;
       this.dragCard = card;
       this.addFrom = "hand";
@@ -527,7 +527,7 @@ export default {
       setTimeout(() => {
         this.properDrop = false;
         //console.log("set properDrop to false");
-      },50);
+      },ms);
 
       console.log(this.card_list);
     });

@@ -112,16 +112,17 @@ export default {
     },
     drop(data) {
       this.drag = false;
+      let dropCard = this.dragCard;
+
+      // ms for re-set properDrop 
+      let disable_first_drop = 50;
 
       if(this.lastPlace == "decks") {
 
-        //let dropCard = this.card_list[this.lastPlaceId];
-        let dropCard = this.dragCard;
-
-        this.$bus.$emit("hand-to-deck",dropCard);
-        console.log("emit dropCard");
-
         if(this.card_list[this.lastPlaceId] != this.dragCard || typeof this.card_list[this.lastPlaceId] == "undefined"){
+
+          disable_first_drop = 0;
+
           // ghost probably lie in somewhere else
 
           switch(data.to.getAttribute("id")){
@@ -155,24 +156,61 @@ export default {
           console.log("hand to deck error");
         }
 
-        //this.$bus.$emit("hand-to-deck",dropCard);
-        //console.log("emit dropCard");
+        this.$bus.$emit("hand-to-deck",dropCard);
+        console.log("emit dropCard to deck");
 
       } else if(this.lastPlace == "discards"){
 
-        let dropCard = this.dragCard;
-        this.$bus.$emit("hand-to-discard",dropCard);
+        //this.$bus.$emit("hand-to-discard",dropCard);
+        //console.log("emit dropCard to discard");
+
+        if(this.card_list[this.lastPlaceId] != this.dragCard || typeof this.card_list[this.lastPlaceId] == "undefined"){
+
+          disable_first_drop = 0;
+
+          // ghost probably lie in somewhere else
+
+          switch(data.to.getAttribute("id")){
+            case "hands":
+              this.$bus.$emit("cancel-hand-drop",data.newDraggableIndex);
+              break;
+            case "mains":
+              this.$bus.$emit("cancel-main-drop",data.newDraggableIndex);
+              break;
+            case "supports":
+              this.$bus.$emit("cancel-support-drop",data.newDraggableIndex);
+              break;
+            case "points":
+              this.$bus.$emit("cancel-point-drop",data.newDraggableIndex);
+              break;
+            case "temp-area":
+              // special case: it will affect deck-stack area too
+              //this.$bus.$emit("cancel-temp-drop",data.newDraggableIndex);
+
+              // args_1: where, args_2: index
+              this.$bus.$emit("cancel-stack-drop",data.to.getAttribute("area-name"),data.newDraggableIndex);
+
+              // case when temp area is the same with stack
+              if(data.to.getAttribute("area-name") == "Discard"){
+                this.$bus.$emit("add-to-discard-again",this.dragCard);
+              }
+
+              break;
+          }
+
+          console.log("hand to discard error");
+        }
+
+        this.$bus.$emit("hand-to-discard",dropCard,disable_first_drop);
+        console.log("emit dropCard to discard");
 
       } else if(this.lastPlace == "ex-decks") {
 
-        let dropCard = this.dragCard;
         this.$bus.$emit("hand-to-ex-deck",dropCard);
 
       } else if(this.lastPlace == "excludeds") {
 
-        let dropCard = this.dragCard;
         this.$bus.$emit("hand-to-excluded",dropCard);
-
       }
 
       console.log("test");

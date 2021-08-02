@@ -136,14 +136,14 @@ export default {
 
     //drop card
 
-    this.$bus.$on("hand-to-discard",(card) => {
+    this.$bus.$on("hand-to-discard",(card,ms) => {
       this.properDrop = true;
       this.dragCard = card;
       this.addFrom = "hand";
 
       setTimeout(() => {
         this.properDrop = false;
-      },50);
+      },ms);
       console.log(this.card_list);
     });
 
@@ -193,6 +193,17 @@ export default {
         console.log("discard: delete! " + id);
       }
     });
+
+    // re-add
+    this.$bus.$on("add-to-discard-again",(card) => {
+      this.card_list.unshift(card);
+      
+      // force to update temp area
+      this.openTemp();
+
+      console.log("Re-add-to-discard!");
+    });
+
   },
   watch: {
     card_list(newVal,oldVal){
