@@ -1,47 +1,6 @@
 <template>
   <div class="container">
 
-    <!--<div
-      class="test-dialog"
-      v-if="showDialog"
-      style="background-color: white; position: relative">
-      <p>This is test id: {{from_which_card}}</p>
-
-      <draggable
-        class="overlap-card-list"
-        tag="div"
-        v-model="list"
-        v-bind="dragOptions"
-        @start.stop="drag = true"
-        @end.stop="dismissPinned"
-      >
-        <transition-group
-          class="row"
-          type="transition"
-          :name="!drag ? 'flip-list' : null"
-        >
-          
-          <div
-            :class = "index % 5 == 0 ? 'item col-2 offset-1' : 'item col-2' "
-            v-for="(element, index) in list"
-            :key="element.order"
-            v-b-modal.card-detail
-            @click="openModal(element.order)"
-            @mousedown="firePinned"
-          >
-            <img src="../PM_Back.jpg" />
-            <i
-              :class="
-                element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'
-              "
-              @click="element.fixed = !element.fixed"
-              aria-hidden="true"
-            >{{index}} , {{element.order}}</i>
-          </div>
-        </transition-group>
-      </draggable>
-    </div>-->
-
     <b-modal 
       id="card-detail"
       scrollable
@@ -60,13 +19,15 @@
     <draggable
       class="card-list"
       tag="div"
-      v-model="list"
+      v-model="card_list"
       v-bind="dragOptions"
       :emptyInsertThreshold="150"
       @start="drag = true"
-      @end="drag = false"
+      @end="drop"
+      :move="dropArea"
     >
       <transition-group
+        id="mains"
         class="row"
         type="transition"
         :name="!drag ? 'flip-list' : null"
@@ -74,7 +35,7 @@
         
         <div
           :class = "index % 5 == 0 ? 'item col-2 offset-1' : 'item col-2' "
-          v-for="(element, index) in list"
+          v-for="(element, index) in card_list"
           :key="'ma-' + index"
           v-b-modal.card-detail
           @click="openModal(element.order)"
@@ -91,7 +52,7 @@
           <draggable
             class="overlap-card-list"
             tag="div"
-            v-model="list"
+            v-model="card_list"
             v-bind="dragOptions"
             @start="drag = true"
             @end="drag = false"
@@ -106,7 +67,7 @@
               
               <div
                 class="item col-md-6" 
-                v-for="element in list"
+                v-for="element in card_list"
                 :key="element.order"
                 v-b-modal.card-detail
                 @click="openModal(element.order)"
@@ -165,7 +126,7 @@ export default {
 
     return {
       row_of_card: rowofcard,
-      list: mapped_list,
+      card_list: mapped_list,
       drag: false,
       modalData: null,
       showDialog: showd,
@@ -185,19 +146,75 @@ export default {
       );
       this.from_which_card = data;
       console.log("it should open!");
-      console.log(this.list);
+      console.log(this.card_list);
       console.log(this.showDialog);
     },
     closeDialog () {
       this.showDialog = false;
       console.log("it should close!");
     },
-    moveCard () {
-      this.drag = true;
-      console.log('click card on!');
+    dropArea(place){
+      console.log("move");
+      console.log(place);
+
+      this.lastPlace = place.to.getAttribute("id");
+
+      if(place.to.getAttribute("id") == "decks"){
+
+        this.lastPlaceId = place.draggedContext.index;
+        return false;
+
+      } else if(place.to.getAttribute("id") == "discards"){
+
+        this.lastPlaceId = place.draggedContext.index;
+        return false;
+
+      } else if(place.to.getAttribute("id") == "ex-decks"){
+
+        this.lastPlaceId = place.draggedContext.index;
+        return false;
+
+      } else if(place.to.getAttribute("id") == "excludeds"){
+
+        this.lastPlaceId = place.draggedContext.index;
+        return false;
+
+      } else if(place.to.getAttribute("id") == "hands"){
+
+        this.lastPlaceId = place.draggedContext.index;
+        return true;
+
+      } else {
+        return true;
+      }
     },
-    occur () {
-      console.log('fire');
+    drop(data) {
+      this.drag = false;
+
+      if(this.lastPlace == "decks") {
+
+        let dropCard = this.card_list[this.lastPlaceId];
+        this.$bus.$emit("support-to-deck",dropCard);
+
+      } else if(this.lastPlace == "discards"){
+
+        let dropCard = this.card_list[this.lastPlaceId];
+        this.$bus.$emit("support-to-discard",dropCard);
+
+      } else if(this.lastPlace == "ex-decks") {
+
+        let dropCard = this.card_list[this.lastPlaceId];
+        this.$bus.$emit("support-to-ex-deck",dropCard);
+
+      } else if(this.lastPlace == "excludeds") {
+
+        let dropCard = this.card_list[this.lastPlaceId];
+        this.$bus.$emit("support-to-excluded",dropCard);
+
+      }
+
+      console.log("test");
+      console.log(data);
     },
   },
   computed: {
@@ -210,6 +227,13 @@ export default {
       };
     },
   },
+  mount() {
+    this.$bus.$on("able-to-remove",(where) => {
+      if(where == "main"){
+        this.card_list.splice(this.lastPlaceId,1);
+      }
+    });
+  }
 };
 </script>
 

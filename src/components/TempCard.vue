@@ -12,6 +12,8 @@
       @remove="updateRemoveTo"
     >
       <transition-group
+        id="temp-area"
+        :area-name="title_from"
         class="row"
         type="transition"
         :name="!drag ? 'flip-list' : null"
@@ -95,6 +97,7 @@ export default {
       this.$bus.$emit("get-card")
     },
     updateAddTo(card_data) {
+      console.log("updataAddTo" + this.title_from);
       switch(this.title_from) {
         case "Deck":
           this.$bus.$emit("add-to-deck",card_data.newIndex,this.card_list[card_data.newIndex]);
@@ -165,6 +168,11 @@ export default {
       this.card_list = card_list;
       this.click_from_addable = true;
       console.log("temp: receive!");
+    });
+
+    this.$bus.$on("cancel-temp-drop",(id) => {
+      this.card_list.splice(id,1);
+      console.log("temp: cancel " + id);
     });
   }
 };

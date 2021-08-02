@@ -3,21 +3,23 @@
     <draggable
       class="point-list"
       tag="div"
-      v-model="list"
+      v-model="card_list"
       v-bind="dragOptions"
       @start="drag = true"
-      @end="drag = false"
+      @end="drop"
+      :move="dropArea"
     >
       <transition-group
+        id="points"
         class="row"
         type="transition"
         :name="!drag ? 'flip-list' : null"
       >
         <div
           
-          v-for="(element,index) in list"
+          v-for="(element,index) in card_list"
           :key="element.order"
-          :class="index == list.length - 1 ? 'point last-point' : 'point'"
+          :class="index == card_list.length - 1 ? 'point last-point' : 'point'"
         >
           <div
             class="point-cards col"
@@ -58,13 +60,73 @@ export default {
 
     return {
       row_of_card: rowofcard,
-      list: mapped_list,
+      card_list: mapped_list,
       drag: false,
     };
   },
   methods: {
-    sort() {
-      this.list = this.list.sort((a, b) => a.order - b.order);
+    dropArea(place){
+      console.log("move");
+      console.log(place);
+
+      this.lastPlace = place.to.getAttribute("id");
+
+      if(place.to.getAttribute("id") == "decks"){
+
+        this.lastPlaceId = place.draggedContext.index;
+        return false;
+
+      } else if(place.to.getAttribute("id") == "discards"){
+
+        this.lastPlaceId = place.draggedContext.index;
+        return false;
+
+      } else if(place.to.getAttribute("id") == "ex-decks"){
+
+        this.lastPlaceId = place.draggedContext.index;
+        return false;
+
+      } else if(place.to.getAttribute("id") == "excludeds"){
+
+        this.lastPlaceId = place.draggedContext.index;
+        return false;
+
+      } else if(place.to.getAttribute("id") == "hands"){
+
+        this.lastPlaceId = place.draggedContext.index;
+        return true;
+
+      } else {
+        return true;
+      }
+    },
+    drop(data) {
+      this.drag = false;
+
+      if(this.lastPlace == "decks") {
+
+        let dropCard = this.card_list[this.lastPlaceId];
+        this.$bus.$emit("hand-to-deck",dropCard);
+
+      } else if(this.lastPlace == "discards"){
+
+        let dropCard = this.card_list[this.lastPlaceId];
+        this.$bus.$emit("hand-to-discard",dropCard);
+
+      } else if(this.lastPlace == "ex-decks") {
+
+        let dropCard = this.card_list[this.lastPlaceId];
+        this.$bus.$emit("hand-to-ex-deck",dropCard);
+
+      } else if(this.lastPlace == "excludeds") {
+
+        let dropCard = this.card_list[this.lastPlaceId];
+        this.$bus.$emit("hand-to-excluded",dropCard);
+        
+      }
+
+      console.log("test");
+      console.log(data);
     },
   },
   computed: {
@@ -77,6 +139,13 @@ export default {
       };
     },
   },
+  mount() {
+    this.$bus.$on("able-to-remove",(where) => {
+      if(where == "point"){
+        this.card_list.splice(this.lastPlaceId,1);
+      }
+    });
+  }
 };
 </script>
 

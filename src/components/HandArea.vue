@@ -8,7 +8,6 @@
       v-bind="dragOptions"
       @start="drag = true"
       @end="drop"
-      @unchoose="shout"
       :move="dropArea"
     >
       <transition-group
@@ -77,15 +76,36 @@ export default {
 
       this.lastPlace = place.to.getAttribute("id");
 
-      if(place.to.getAttribute("id") == "deck"){
+      if(place.to.getAttribute("id") == "decks"){
+
         this.lastPlaceId = place.draggedContext.index;
+        this.dragCard = place.draggedContext.element;
         return false;
+
       } else if(place.to.getAttribute("id") == "discards"){
+
         this.lastPlaceId = place.draggedContext.index;
+        this.dragCard = place.draggedContext.element;
         return false;
-      } else if(place.to.getAttribute("id") == "hands"){
+
+      } else if(place.to.getAttribute("id") == "ex-decks"){
+
         this.lastPlaceId = place.draggedContext.index;
+        this.dragCard = place.draggedContext.element;
+        return false;
+
+      } else if(place.to.getAttribute("id") == "excludeds"){
+
+        this.lastPlaceId = place.draggedContext.index;
+        this.dragCard = place.draggedContext.element;
+        return false;
+
+      } else if(place.to.getAttribute("id") == "hands"){
+
+        this.lastPlaceId = place.draggedContext.index;
+        this.dragCard = place.draggedContext.element;
         return true;
+
       } else {
         return true;
       }
@@ -93,23 +113,77 @@ export default {
     drop(data) {
       this.drag = false;
 
-      if(this.lastPlace == "deck") {
-        let dropCard = this.card_list[this.lastPlaceId];
-        //this.card_list.splice(this.lastPlaceId,1);
+      if(this.lastPlace == "decks") {
+
+        //let dropCard = this.card_list[this.lastPlaceId];
+        let dropCard = this.dragCard;
+
         this.$bus.$emit("hand-to-deck",dropCard);
+        console.log("emit dropCard");
+
+        if(this.card_list[this.lastPlaceId] != this.dragCard || typeof this.card_list[this.lastPlaceId] == "undefined"){
+          // ghost probably lie in somewhere else
+
+          switch(data.to.getAttribute("id")){
+            case "hands":
+              this.$bus.$emit("cancel-hand-drop",data.newDraggableIndex);
+              break;
+            case "mains":
+              this.$bus.$emit("cancel-main-drop",data.newDraggableIndex);
+              break;
+            case "supports":
+              this.$bus.$emit("cancel-support-drop",data.newDraggableIndex);
+              break;
+            case "points":
+              this.$bus.$emit("cancel-point-drop",data.newDraggableIndex);
+              break;
+            case "temp-area":
+              // special case: it will affect deck-stack area too
+              //this.$bus.$emit("cancel-temp-drop",data.newDraggableIndex);
+
+              // args_1: where, args_2: index
+              this.$bus.$emit("cancel-stack-drop",data.to.getAttribute("area-name"),data.newDraggableIndex);
+
+              // case when temp area is the same with stack
+              if(data.to.getAttribute("area-name") == "Deck"){
+                this.$bus.$emit("add-to-deck-again",this.dragCard);
+              }
+
+              break;
+          }
+
+          console.log("hand to deck error");
+        }
+
+        //this.$bus.$emit("hand-to-deck",dropCard);
+        //console.log("emit dropCard");
+
       } else if(this.lastPlace == "discards"){
-        let dropCard = this.card_list[this.lastPlaceId];
-        //this.card_list.splice(this.lastPlaceId,1);
+
+        let dropCard = this.dragCard;
         this.$bus.$emit("hand-to-discard",dropCard);
+
+      } else if(this.lastPlace == "ex-decks") {
+
+        let dropCard = this.dragCard;
+        this.$bus.$emit("hand-to-ex-deck",dropCard);
+
+      } else if(this.lastPlace == "excludeds") {
+
+        let dropCard = this.dragCard;
+        this.$bus.$emit("hand-to-excluded",dropCard);
+
       }
 
       console.log("test");
       console.log(data);
+      console.log(data.to);
+      console.log(data.to.getAttribute("area-name"));
+      console.log(data.from);
     },
-    shout(data) {
-      console.log("shout");
-      console.log(data);
-    }
+    dropException(){
+
+    },
   },
   computed: {
     dragOptions() {
@@ -134,8 +208,11 @@ export default {
       this.card_list.push(card);
     });
 
-    this.$bus.$on("hand-able-to-remove",() => {
-      this.card_list.splice(this.lastPlaceId,1);
+    this.$bus.$on("able-to-remove",(where) => {
+      if(where == "hand"){
+        console.log("lastPlaceId: " + this.lastPlaceId);
+        this.card_list.splice(this.lastPlaceId,1);
+      }
     });
   }
 };
@@ -181,4 +258,5 @@ export default {
   max-width: 100%;
   opacity: 0;
 }
+
 </style>

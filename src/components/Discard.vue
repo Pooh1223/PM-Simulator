@@ -66,15 +66,17 @@ export default {
     }
     
     const mapped_list = message.map((name, index) => {
-      return { name, order: index + 1 };
+      return { name: String.fromCharCode('a'.charCodeAt(0) + index), order: index + 1 };
     });
 
     return {
       card_list: mapped_list,
       first_card: mapped_list[0],
       drag: false,
+
       properDrop: false,
       dragCard: null,
+      addFrom: null,
     };
   },
   methods: {
@@ -91,7 +93,7 @@ export default {
     },
     stay(card) {
       if(this.properDrop == true){
-        this.$bus.$emit("hand-able-to-remove");
+        this.$bus.$emit("able-to-remove",this.addFrom);
         this.card_list.unshift(card);
         console.log("yes");
       } else {
@@ -132,16 +134,72 @@ export default {
       console.log(this.card_list);
     });
 
+    //drop card
+
     this.$bus.$on("hand-to-discard",(card) => {
-      //this.card_list.unshift(card);
       this.properDrop = true;
       this.dragCard = card;
-      //this.stay(card);
+      this.addFrom = "hand";
+
       setTimeout(() => {
         this.properDrop = false;
       },50);
       console.log(this.card_list);
     });
+
+    this.$bus.$on("support-to-discard",(card) => {
+      this.properDrop = true;
+      this.dragCard = card;
+      this.addFrom = "support";
+
+      setTimeout(() => {
+        this.properDrop = false;
+      },50);
+      console.log(this.card_list);
+    });
+
+    this.$bus.$on("main-to-discard",(card) => {
+      this.properDrop = true;
+      this.dragCard = card;
+      this.addFrom = "main";
+
+      setTimeout(() => {
+        this.properDrop = false;
+      },50);
+      console.log(this.card_list);
+    });
+
+    this.$bus.$on("point-to-discard",(card) => {
+      this.properDrop = true;
+      this.dragCard = card;
+      this.addFrom = "point";
+
+      setTimeout(() => {
+        this.properDrop = false;
+      },50);
+      console.log(this.card_list);
+    });
+
+    // cancel 
+
+    this.$bus.$on("cancel-stack-drop",(area,id) => {
+
+      if(area == "Discard"){
+        console.log("id:" + id);
+
+        this.card_list.splice(id,1);
+        this.properDrop = false;
+        this.openTemp();
+        console.log("discard: delete! " + id);
+      }
+    });
+  },
+  watch: {
+    card_list(newVal,oldVal){
+      console.log("watch");
+      console.log(newVal);
+      console.log(oldVal);
+    }
   }
 };
 </script>

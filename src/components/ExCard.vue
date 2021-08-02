@@ -1,9 +1,47 @@
 <template>
   <div class="container">
-      <div class="ex-cards"
+      <!--<div class="ex-cards"
         @click="openTemp">
         <img src="../PM_Back.jpg" />
-      </div>
+      </div>-->
+
+      <draggable
+        class="ex-deck-list"
+        tag="div"
+        v-model="card_list"
+        v-bind="dragOptions"
+        @start="drag = true"
+        @end="drag = false"
+        :move="isLastCard"
+        >
+        <transition-group
+          id="ex-decks"
+          type="transition"
+          :name="!drag ? 'flip-list' : null"
+        >
+          <div
+            class="ex-deck"
+            v-for="(element,index) in card_list"
+            :key="'de-' + index"
+            @mouseenter="stay(dragCard)"
+          >
+            <div
+              class="ex-cards"
+              v-if="index == 0"
+              >
+                <img src="../PM_Back.jpg" />
+                <i
+                  :class="
+                    element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'
+                  "
+                  @click="element.fixed = !element.fixed"
+                  aria-hidden="true"
+                ></i>
+            </div>
+            
+          </div>
+        </transition-group>
+      </draggable>
 
       <b-button
         id="ex-deck-show"
@@ -18,6 +56,7 @@
 
 <script>
 import 'bootstrap/dist/css/bootstrap.css';
+import draggable from "vuedraggable";
 //import DialogDrag from 'vue-dialog-drag';
 
 export default {
@@ -25,6 +64,7 @@ export default {
   display: "ExDeck",
   order: 6,
   components: {
+    draggable,
     //DialogDrag,
   },
   data() {
@@ -39,12 +79,19 @@ export default {
     });
 
     return {
+      drag: false,
       card_list: mapped_list,
       showDialog: false,
       preText: 2,
+      properDrop: false,
+      dragCard: null,
+      addFrom: null,
     };
   },
   methods: {
+    isLastCard() {
+      return false;
+    },
     openTemp() {
       this.$bus.$emit("open-from-ex-deck","Ex-Deck",this.card_list);
       console.log("ex-deck: sent!");
@@ -53,8 +100,26 @@ export default {
       this.showDialog = !this.showDialog;
       console.log(data);
     },
+    stay(card) {
+      if(this.properDrop == true){
+        this.$bus.$emit("able-to-remove",this.addFrom);
+        this.card_list.unshift(card);
+        console.log("yes");
+      } else {
+        console.log("no");
+      }
+      this.properDrop = false;
+    },
   },
   computed: {
+    dragOptions() {
+      return {
+        animation: 200,
+        group: "description",
+        disabled: false,
+        ghostClass: "ghost",
+      };
+    },
   },
   mounted() {
     this.$bus.$on("add-to-ex-deck",(id,card) => {
@@ -65,6 +130,52 @@ export default {
     this.$bus.$on("remove-to-ex-deck",(id) => {
       console.log("remove " + id + "-th card");
       this.card_list.splice(id,1);
+    });
+
+    // drop
+
+    this.$bus.$on("hand-to-ex-deck",(card) => {
+      this.properDrop = true;
+      this.dragCard = card;
+      this.addFrom = "hand";
+
+      setTimeout(() => {
+        this.properDrop = false;
+      },50);
+      console.log(this.card_list);
+    });
+
+    this.$bus.$on("support-to-ex-deck",(card) => {
+      this.properDrop = true;
+      this.dragCard = card;
+      this.addFrom = "support";
+
+      setTimeout(() => {
+        this.properDrop = false;
+      },50);
+      console.log(this.card_list);
+    });
+
+    this.$bus.$on("main-to-ex-deck",(card) => {
+      this.properDrop = true;
+      this.dragCard = card;
+      this.addFrom = "main";
+
+      setTimeout(() => {
+        this.properDrop = false;
+      },50);
+      console.log(this.card_list);
+    });
+
+    this.$bus.$on("point-to-ex-deck",(card) => {
+      this.properDrop = true;
+      this.dragCard = card;
+      this.addFrom = "point";
+
+      setTimeout(() => {
+        this.properDrop = false;
+      },50);
+      console.log(this.card_list);
     });
   }
 };

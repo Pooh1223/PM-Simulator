@@ -7,22 +7,21 @@
       v-bind="dragOptions"
       @start="drag = true"
       @end="drag = false"
-      @add="properAdd"
-      @remove="properRemove"
       :move="isLastCard"
     >
       <transition-group
-        
+        id = "excludeds"
         type="transition"
         :name="!drag ? 'flip-list' : null"
       >
         <div
-          class="discard"
+          class="excluded"
           v-for="(element,index) in card_list"
-          :key="'dis-' + index"
+          :key="'excl-' + index"
+          @mouseenter="stay(dragCard)"
         >
           <div
-            class="discard-cards"
+            class="excluded-cards"
             v-if="index == 0"
           >
             <img src="../PM_Back.jpg" />
@@ -74,33 +73,29 @@ export default {
       card_list: mapped_list,
       first_card: mapped_list[0],
       drag: false,
+      properDrop: false,
+      dragCard: null,
+      addFrom: null,
     };
   },
   methods: {
-    properAdd() {
-      console.log(this.first_card);
-
-      if(this.first_card == this.card_list[0]){
-        // swap 2 element
-        [this.card_list[0],this.card_list[1]] = [this.card_list[1],this.card_list[0]];
-      }
-
-      this.first_card = this.card_list[0];
-
-      console.log(this.card_list);
-    },
-    properRemove() {
-      console.log("remove");
-      this.first_card = this.card_list[0];
-    },
     isLastCard() {
-      if(this.card_list.length == 1) return false;
-      else return true;
+      return false;
     },
 
     openTemp() {
       this.$bus.$emit("open-from-excluded","Excluded",this.card_list);
       console.log("Excluded: sent!");
+    },
+    stay(card) {
+      if(this.properDrop == true){
+        this.$bus.$emit("able-to-remove",this.addFrom);
+        this.card_list.unshift(card);
+        console.log("yes");
+      } else {
+        console.log("no");
+      }
+      this.properDrop = false;
     },
   },
   computed: {
@@ -123,6 +118,52 @@ export default {
       console.log("remove " + id + "-th card");
       this.card_list.splice(id,1);
     });
+
+    // drop
+
+    this.$bus.$on("hand-to-excluded",(card) => {
+      this.properDrop = true;
+      this.dragCard = card;
+      this.addFrom = "hand";
+
+      setTimeout(() => {
+        this.properDrop = false;
+      },50);
+      console.log(this.card_list);
+    });
+
+    this.$bus.$on("support-to-excluded",(card) => {
+      this.properDrop = true;
+      this.dragCard = card;
+      this.addFrom = "support";
+
+      setTimeout(() => {
+        this.properDrop = false;
+      },50);
+      console.log(this.card_list);
+    });
+
+    this.$bus.$on("main-to-excluded",(card) => {
+      this.properDrop = true;
+      this.dragCard = card;
+      this.addFrom = "main";
+
+      setTimeout(() => {
+        this.properDrop = false;
+      },50);
+      console.log(this.card_list);
+    });
+
+    this.$bus.$on("point-to-excluded",(card) => {
+      this.properDrop = true;
+      this.dragCard = card;
+      this.addFrom = "point";
+
+      setTimeout(() => {
+        this.properDrop = false;
+      },50);
+      console.log(this.card_list);
+    });
   }
 };
 </script>
@@ -141,11 +182,11 @@ export default {
   opacity: 0.5;
   background: #c8ebfb;
 }
-.discard-list {
+.excluded-list {
   min-height: 20px;
   max-width: 100%;
 }
-.discard {
+.excluded {
   cursor: move;
   float: left;
   //width: 50%;
@@ -157,14 +198,14 @@ export default {
   padding: 0;
 }
 
-.discard-cards {
+.excluded-cards {
   padding: 0;
 }
 
-.discard i {
+.excluded i {
   cursor: pointer;
 }
-.discard img {
+.excluded img {
   vertical-align: top;
   max-width: 100%;
   opacity: 0;

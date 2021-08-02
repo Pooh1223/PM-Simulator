@@ -15,7 +15,7 @@
         :move="isLastCard"
         >
         <transition-group
-          id="deck"
+          id="decks"
           type="transition"
           :name="!drag ? 'flip-list' : null"
         >
@@ -23,6 +23,7 @@
             class="deck"
             v-for="(element,index) in card_list"
             :key="'de-' + index"
+            @mouseenter="stay(dragCard)"
           >
             <div
               class="deck-cards"
@@ -235,6 +236,9 @@ export default {
     return {
       drag: false,
       after_drag_card: false,
+      properDrop: false,
+      dragCard: null,
+      addFrom: null,
 
       card_list: mapped_list,
       showMainDialog: false,
@@ -475,6 +479,18 @@ export default {
       //else return true;
       return false;
     },
+    stay(card) {
+      if(this.properDrop == true){
+        this.$bus.$emit("able-to-remove",this.addFrom);
+        this.card_list.unshift(card);
+        console.log(this.addFrom);
+        console.log(card);
+        console.log("yes");
+      } else {
+        console.log("no");
+      }
+      this.properDrop = false;
+    },
   },
   computed: {
     dragOptions() {
@@ -492,7 +508,7 @@ export default {
   },
   mounted() {
     this.$bus.$on("add-to-deck",(id,card) => {
-      console.log("add card:" + card);
+      console.log("add card: " + id);
       this.card_list.splice(id,0,card);
     });
 
@@ -501,10 +517,81 @@ export default {
       this.card_list.splice(id,1);
     });
 
+    // drop
+
     this.$bus.$on("hand-to-deck",(card) => {
-      this.card_list.unshift(card);
+      this.properDrop = true;
+      this.dragCard = card;
+      this.addFrom = "hand";
+
+      setTimeout(() => {
+        this.properDrop = false;
+        //console.log("set properDrop to false");
+      },50);
+
       console.log(this.card_list);
     });
+
+    this.$bus.$on("support-to-deck",(card) => {
+      
+      this.properDrop = true;
+      this.dragCard = card;
+      this.addFrom = "support";
+      
+      setTimeout(() => {
+        this.properDrop = false;
+      },50);
+      console.log(this.card_list);
+    });
+
+    this.$bus.$on("main-to-deck",(card) => {
+      
+      this.properDrop = true;
+      this.dragCard = card;
+      this.addFrom = "main";
+      
+      setTimeout(() => {
+        this.properDrop = false;
+      },50);
+      console.log(this.card_list);
+    });
+
+    this.$bus.$on("point-to-deck",(card) => {
+      
+      this.properDrop = true;
+      this.dragCard = card;
+      this.addFrom = "point";
+      
+      setTimeout(() => {
+        this.properDrop = false;
+      },50);
+
+      console.log(this.card_list);
+    });
+
+    // cancel
+    this.$bus.$on("cancel-stack-drop",(area,id) => {
+
+      if(area == "Deck"){
+        console.log("id:" + id);
+
+        this.card_list.splice(id,1);
+        this.properDrop = false;
+        this.openTemp();
+        console.log("deck: delete! " + id);
+      }
+    });
+
+    // re-add
+    this.$bus.$on("add-to-deck-again",(card) => {
+      this.card_list.unshift(card);
+      
+      // force to update temp area
+      this.openTemp();
+
+      console.log("Re-add-to-deck!");
+    });
+
   }
 };
 </script>
