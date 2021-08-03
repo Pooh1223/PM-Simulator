@@ -1,5 +1,6 @@
 <template>
-  <div class="container">
+  <div class="container"
+  @mouseenter="stay(dragCard)">
     <draggable
       class="discard-list"
       tag="div"
@@ -18,7 +19,7 @@
           class="discard"
           v-for="(element,index) in card_list"
           :key="'dis-' + index"
-          @mouseenter="stay(dragCard)"
+          
         >
           <div
             class="discard-cards"

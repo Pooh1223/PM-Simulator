@@ -117,10 +117,20 @@ export default {
       // ms for re-set properDrop 
       let disable_first_drop = 70;
 
+      // check whether the card is at the same area
+      // but its ghost changed the position before it drop
+
+      //console.log(this.card_list[data.newDraggableIndex] === dropCard);
+      //if(data.to === data.from && this.card_list[data.newDraggableIndex] === dropCard){
+      //  // implies that the dragged card only changes its position in the original area
+      //  this.lastPlaceId = data.newDraggableIndex;
+      //  console.log("in change id");
+      //}
+
       if(this.lastPlace == "decks") {
 
         if(this.card_list[this.lastPlaceId] != this.dragCard || typeof this.card_list[this.lastPlaceId] == "undefined"){
-          
+
           disable_first_drop = 0;
 
           // ghost probably lie in somewhere else
@@ -184,6 +194,19 @@ export default {
           switch(data.to.getAttribute("id")){
             case "hands":
               this.$bus.$emit("cancel-hand-drop",data.newDraggableIndex);
+
+              // since you change the ghost position before drop to stack
+              // it might cause error since the lastPlaceId is no longer the same
+
+              if(data.to === data.from && this.card_list[data.newDraggableIndex] === dropCard){
+                // implies that the dragged card only changes its position in the original area
+                
+                this.lastPlaceId = data.newDraggableIndex;
+                this.$bus.$emit("add-to-discard-again",dropCard);
+                this.card_list.splice(this.lastPlaceId,1);
+                console.log("in change id");
+              }
+
               break;
             case "mains":
               this.$bus.$emit("cancel-main-drop",data.newDraggableIndex);
@@ -346,9 +369,6 @@ export default {
       console.log(data.to);
       console.log(data.to.getAttribute("area-name"));
       console.log(data.from);
-    },
-    dropException(){
-
     },
   },
   computed: {
