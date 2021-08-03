@@ -97,7 +97,7 @@ export default {
       this.$bus.$emit("get-card")
     },
     updateAddTo(card_data) {
-      console.log("updataAddTo" + this.title_from);
+      console.log("updateAddTo" + this.title_from);
       switch(this.title_from) {
         case "Deck":
           this.$bus.$emit("add-to-deck",card_data.newIndex,this.card_list[card_data.newIndex]);

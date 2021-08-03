@@ -591,6 +591,14 @@ export default {
         this.openTemp();
       }
 
+      this.properDrop = true;
+      this.dragCard = card;
+      this.addFrom = "hand";
+      
+      setTimeout(() => {
+        this.properDrop = false;
+      },50);
+
       console.log("Re-add-to-deck!");
     });
 
