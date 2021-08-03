@@ -149,7 +149,7 @@ export default {
                 // implies that the dragged card only changes its position in the original area
                 
                 this.lastPlaceId = data.newDraggableIndex;
-                this.$bus.$emit("add-to-discard-again",dropCard);
+                this.$bus.$emit("add-to-deck-again",dropCard);
                 this.card_list.splice(this.lastPlaceId,1);
                 console.log("in change id");
               }
@@ -255,7 +255,7 @@ export default {
                 // implies that the dragged card only changes its position in the original area
                 
                 this.lastPlaceId = data.newDraggableIndex;
-                this.$bus.$emit("add-to-discard-again",dropCard);
+                this.$bus.$emit("add-to-ex-deck-again",dropCard);
                 this.card_list.splice(this.lastPlaceId,1);
                 console.log("in change id");
               }
@@ -305,7 +305,7 @@ export default {
                 // implies that the dragged card only changes its position in the original area
                 
                 this.lastPlaceId = data.newDraggableIndex;
-                this.$bus.$emit("add-to-discard-again",dropCard);
+                this.$bus.$emit("add-to-excluded-again",dropCard);
                 this.card_list.splice(this.lastPlaceId,1);
                 console.log("in change id");
               }
