@@ -233,6 +233,7 @@ export default {
               break;
             case "mains":
               this.$bus.$emit("cancel-main-drop",data.newDraggableIndex);
+              this.$bus.$emit("add-to-deck-again",dropCard,data.to.getAttribute("area-name"));
               break;
             case "supports":
               //this.$bus.$emit("cancel-support-drop",data.newDraggableIndex);
@@ -248,6 +249,7 @@ export default {
               break;
             case "points":
               this.$bus.$emit("cancel-point-drop",data.newDraggableIndex);
+              this.$bus.$emit("add-to-deck-again",dropCard,data.to.getAttribute("area-name"));
               break;
             case "temp-area":
               // special case: it will affect deck-stack area too
@@ -282,9 +284,11 @@ export default {
           switch(data.to.getAttribute("id")){
             case "hands":
               this.$bus.$emit("cancel-hand-drop",data.newDraggableIndex);
+              this.$bus.$emit("add-to-discard-again",dropCard,data.to.getAttribute("area-name"));
               break;
             case "mains":
               this.$bus.$emit("cancel-main-drop",data.newDraggableIndex);
+              this.$bus.$emit("add-to-discard-again",dropCard,data.to.getAttribute("area-name"));
               break;
             case "supports":
               //this.$bus.$emit("cancel-support-drop",data.newDraggableIndex);
@@ -296,7 +300,7 @@ export default {
                 // implies that the dragged card only changes its position in the original area
                 
                 this.lastPlaceId = data.newDraggableIndex;
-                this.$bus.$emit("add-to-discard-again",dropCard);
+                this.$bus.$emit("add-to-discard-again",dropCard,data.to.getAttribute("area-name"));
                 this.card_list.splice(this.lastPlaceId,1);
                 console.log("in change id");
               }
@@ -304,6 +308,7 @@ export default {
               break;
             case "points":
               this.$bus.$emit("cancel-point-drop",data.newDraggableIndex);
+              this.$bus.$emit("add-to-discard-again",dropCard,data.to.getAttribute("area-name"));
               break;
             case "temp-area":
               // special case: it will affect deck-stack area too
@@ -338,9 +343,11 @@ export default {
           switch(data.to.getAttribute("id")){
             case "hands":
               this.$bus.$emit("cancel-hand-drop",data.newDraggableIndex);
+              this.$bus.$emit("add-to-ex-deck-again",dropCard,data.to.getAttribute("area-name"));
               break;
             case "mains":
               this.$bus.$emit("cancel-main-drop",data.newDraggableIndex);
+              this.$bus.$emit("add-to-ex-deck-again",dropCard,data.to.getAttribute("area-name"));
               break;
             case "supports":
               //this.$bus.$emit("cancel-support-drop",data.newDraggableIndex);
@@ -348,13 +355,14 @@ export default {
                 // implies that the dragged card only changes its position in the original area
                 
                 this.lastPlaceId = data.newDraggableIndex;
-                this.$bus.$emit("add-to-ex-deck-again",dropCard);
+                this.$bus.$emit("add-to-ex-deck-again",dropCard,data.to.getAttribute("area-name"));
                 this.card_list.splice(this.lastPlaceId,1);
                 console.log("in change id");
               }
               break;
             case "points":
               this.$bus.$emit("cancel-point-drop",data.newDraggableIndex);
+              this.$bus.$emit("add-to-ex-deck-again",dropCard,data.to.getAttribute("area-name"));
               break;
             case "temp-area":
               // special case: it will affect deck-stack area too
@@ -389,9 +397,11 @@ export default {
           switch(data.to.getAttribute("id")){
             case "hands":
               this.$bus.$emit("cancel-hand-drop",data.newDraggableIndex);
+              this.$bus.$emit("add-to-excluded-again",dropCard,data.to.getAttribute("area-name"));
               break;
             case "mains":
               this.$bus.$emit("cancel-main-drop",data.newDraggableIndex);
+              this.$bus.$emit("add-to-excluded-again",dropCard,data.to.getAttribute("area-name"));
               break;
             case "supports":
               //this.$bus.$emit("cancel-support-drop",data.newDraggableIndex);
@@ -400,13 +410,14 @@ export default {
                 // implies that the dragged card only changes its position in the original area
                 
                 this.lastPlaceId = data.newDraggableIndex;
-                this.$bus.$emit("add-to-excluded-again",dropCard);
+                this.$bus.$emit("add-to-excluded-again",dropCard,data.to.getAttribute("area-name"));
                 this.card_list.splice(this.lastPlaceId,1);
                 console.log("in change id");
               }
               break;
             case "points":
               this.$bus.$emit("cancel-point-drop",data.newDraggableIndex);
+              this.$bus.$emit("add-to-excluded-again",dropCard,data.to.getAttribute("area-name"));
               break;
             case "temp-area":
               // special case: it will affect deck-stack area too
@@ -454,6 +465,11 @@ export default {
       if(where == "support"){
         this.card_list.splice(this.lastPlaceId,1);
       }
+    });
+
+    this.$bus.$on("cancel-support-drop",(id) => {
+      this.card_list.splice(id,1);
+      console.log("cancel support drop:" + id);
     });
   }
 };
