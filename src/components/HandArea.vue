@@ -121,6 +121,21 @@ export default {
         this.dragCard = place.draggedContext.element;
         return true;
 
+      } else if(place.to.getAttribute("id") == "mains"){
+
+        this.lastPlaceId = place.draggedContext.index;
+        this.dragCard = place.draggedContext.element;
+        return true;
+      } else if(place.to.getAttribute("id") == "supports") {
+
+        this.lastPlaceId = place.draggedContext.index;
+        this.dragCard = place.draggedContext.element;
+        return true;
+      } else if(place.to.getAttribute("id") == "points"){
+
+        this.lastPlaceId = place.draggedContext.index;
+        this.dragCard = place.draggedContext.element;
+        return true;
       } else {
         return true;
       }

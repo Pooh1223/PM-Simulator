@@ -201,6 +201,21 @@ export default {
         this.dragCard = place.draggedContext.element;
         return true;
 
+      } else if(place.to.getAttribute("id") == "mains"){
+
+        this.lastPlaceId = place.draggedContext.index;
+        this.dragCard = place.draggedContext.element;
+        return true;
+      } else if(place.to.getAttribute("id") == "supports") {
+
+        this.lastPlaceId = place.draggedContext.index;
+        this.dragCard = place.draggedContext.element;
+        return true;
+      } else if(place.to.getAttribute("id") == "points"){
+
+        this.lastPlaceId = place.draggedContext.index;
+        this.dragCard = place.draggedContext.element;
+        return true;
       } else {
         return true;
       }
@@ -267,10 +282,10 @@ export default {
               break;
           }
 
-          console.log("hand to deck error");
+          console.log("support to deck error");
         }
 
-        this.$bus.$emit("hand-to-deck",dropCard,disable_first_drop);
+        this.$bus.$emit("support-to-deck",dropCard,disable_first_drop);
         console.log("emit dropCard to deck");
 
       } else if(place == "discards"){
@@ -326,10 +341,10 @@ export default {
               break;
           }
 
-          console.log("hand to discard error");
+          console.log("support to discard error");
         }
 
-        this.$bus.$emit("hand-to-discard",dropCard,disable_first_drop);
+        this.$bus.$emit("support-to-discard",dropCard,disable_first_drop);
         console.log("emit dropCard to discard");
 
       } else if(place == "ex-decks") {
@@ -380,10 +395,10 @@ export default {
               break;
           }
 
-          console.log("hand to ex-deck error");
+          console.log("support to ex-deck error");
         }
 
-        this.$bus.$emit("hand-to-ex-deck",dropCard,disable_first_drop);
+        this.$bus.$emit("support-to-ex-deck",dropCard,disable_first_drop);
         console.log("emit dropCard to discard");
 
       } else if(place == "excludeds") {
@@ -435,10 +450,10 @@ export default {
               break;
           }
 
-          console.log("hand to excluded error");
+          console.log("support to excluded error");
         }
 
-        this.$bus.$emit("hand-to-excluded",dropCard,disable_first_drop);
+        this.$bus.$emit("support-to-excluded",dropCard,disable_first_drop);
       }
 
       console.log("test");
