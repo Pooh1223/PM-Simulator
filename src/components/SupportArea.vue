@@ -132,6 +132,10 @@ export default {
       from_which_card: null,
       lastPlace: null,
       lastPlaceId: 0,
+      timer: setTimeout(() => {
+              this.lastPlace = null;
+              console.log("kill last place");
+            },50),
     };
   },
   methods: {
@@ -158,12 +162,14 @@ export default {
       console.log("move");
       console.log(place);
 
+      clearTimeout(this.timer);
+
       this.lastPlace = place.to.getAttribute("id");
       
-      setTimeout(() => {
+      this.timer = setTimeout(() => {
         this.lastPlace = null;
         console.log("kill last place");
-      },100);
+      },50);
 
       if(place.to.getAttribute("id") == "decks"){
 
@@ -223,6 +229,7 @@ export default {
           switch(data.to.getAttribute("id")){
             case "hands":
               this.$bus.$emit("cancel-hand-drop",data.newDraggableIndex);
+              this.$bus.$emit("add-to-deck-again",this.dragCard,data.to.getAttribute("area-name"));
               break;
             case "mains":
               this.$bus.$emit("cancel-main-drop",data.newDraggableIndex);
@@ -330,7 +337,7 @@ export default {
 
           switch(data.to.getAttribute("id")){
             case "hands":
-              //this.$bus.$emit("cancel-hand-drop",data.newDraggableIndex);
+              this.$bus.$emit("cancel-hand-drop",data.newDraggableIndex);
               break;
             case "mains":
               this.$bus.$emit("cancel-main-drop",data.newDraggableIndex);
