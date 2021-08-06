@@ -2,7 +2,7 @@
   <div class="container">
 
     <b-modal 
-      id="card-detail"
+      id="main-detail"
       scrollable
       title="Card-Detail"
       hide-backdrop
@@ -37,7 +37,7 @@
           :class = "index % 5 == 0 ? 'item col-2 offset-1' : 'item col-2' "
           v-for="(element, index) in card_list"
           :key="'ma-' + index"
-          v-b-modal.card-detail
+          v-b-modal.main-detail
           @click="openModal(element.order)"
         >
           <img src="../PM_Back.jpg" />
@@ -69,7 +69,7 @@
                 class="item col-md-6" 
                 v-for="element in card_list"
                 :key="element.order"
-                v-b-modal.card-detail
+                v-b-modal.main-detail
                 @click="openModal(element.order)"
               >
                 <img src="../PM_Back.jpg" />

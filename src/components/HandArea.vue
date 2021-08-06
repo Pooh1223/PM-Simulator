@@ -1,11 +1,73 @@
 <template>
   <div class="container">
     
+    <b-modal 
+      id="hand-detail"
+      scrollable
+      title="Card-Detail"
+      hide-backdrop
+      >
+      <div class="card-container">
+        <img :src="modalData === null ? '../PM_Back.jpg' : modalData.detail.img_url" />
+        <div class="card-attr">
+          <!--<b-table striped hover :items="modalData === null ? [] : addInArray(modalData.detail)"></b-table>-->
+
+          <table class="table table-striped">
+            <tbody>
+              <tr
+                v-for="(attr, index) in Object.entries(modalData.detail)"
+                :key="attr.card_number"
+                >
+                <th v-if="showTable(index)">{{attr[0]}}</th>
+                <td 
+                  :class="textChange.includes(index) ? 'text-danger' : 'text-dark'"
+                  v-if="showTable(index)"
+                  >
+                  {{attr[1]}}
+                </td>
+                <td>
+                  <b-button
+                    class="btn-line"
+                    variant="outline-danger"
+                    v-if="showTable(index) && showTableBtn(index)"
+                    @click="addTableValue(index,attr[0])"
+                    >
+                    +
+                  </b-button>
+                </td>
+                <td>
+                  <b-button
+                    class="btn-line"
+                    variant="outline-danger"
+                    v-if="showTable(index) && showTableBtn(index)"
+                    @click="minusTableValue(index,attr[0])"
+                    >
+                    -
+                  </b-button>
+                </td>
+                <td>
+                  <b-button
+                    class="btn-line"
+                    variant="outline-danger"
+                    v-if="showTable(index) && showTableBtn(index)"
+                    @click="resetTableValue(index,attr[0])"
+                    >
+                    Reset
+                  </b-button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </b-modal>
+
     <draggable
       class="card-list"
       tag="div"
       v-model="card_list"
       v-bind="dragOptions"
+      :emptyInsertThreshold="150"
       @start="drag = true"
       @end="drop"
       :move="dropArea"
@@ -18,10 +80,13 @@
       >
         
         <div
-          class="item col"
+          class="hand-item col"
           v-for="(element, index) in card_list"
           :key="'ha-' + index"
-          :class = "index % 5 == 0 ? 'item col-2 offset-1' : 'item col-2' "
+          :class = "index % 5 == 0 ? 'hand-item col-2 offset-1' : 'hand-item col-2' "
+          v-b-modal.hand-detail
+          @click="openModal(element)"
+          :style="{backgroundImage: 'url(' + element.detail.img_url + ')' }"
         >
           <img src="../PM_Back.jpg" />
           <i
@@ -54,21 +119,32 @@ export default {
   data() {
     const rowofcard = 5;
     const mapped_list = message.map((name, index) => {
-      return { name, order: index + 1 };
+      return { name, order: index + 1};
     });
+    console.log(mapped_list);
+
+    const mydata = require("../data.json");
+    console.log(mydata);
+    const tester = mydata.map((detail, index) => {
+      return {detail, order: index + 1, excost: 0, exsource: 0, exap: 0, exdp: 0};
+    });
+    console.log(tester);
+    //console.log(tester.slice(0,1));
 
     return {
       row_of_card: rowofcard,
-      card_list: mapped_list,
+      card_list: tester.slice(0,8),
       drag: false,
-      text: "I am popover <b>component</b> content!",
-      modalData: null,
+
+      modalData: tester[0],
       lastPlace: null,
       lastPlaceId: 0,
       timer: setTimeout(() => {
               this.lastPlace = null;
               console.log("kill last place");
             },50),
+
+      textChange: [],
     };
   },
   methods: {
@@ -387,6 +463,193 @@ export default {
       console.log(data.to.getAttribute("area-name"));
       console.log(data.from);
     },
+
+    // modal table
+    addInArray(data) {
+      return [data];
+    },
+    showTable(id) {
+      return (id != 0);
+    },
+    showTableBtn(id) {
+      return (id == 6 || id == 7 || id == 10 || id == 11);
+    },
+
+    // modify table value
+
+    // 6 is the index of cost property in detail
+    // 7 is the index of source property in detail
+    // 10 is the index of AP property in detail
+    // 11 is the index of DP property in detail
+
+    addTableValue(index, col) {
+      switch(col){
+        case "cost":
+          this.modalData.excost += 1;
+          this.modalData.detail.cost = parseInt(this.modalData.detail.cost) + 1;
+          
+          if(this.modalData.excost == 0){
+            let id = this.textChange.indexOf(index);
+            if(id > -1){
+              this.textChange.splice(id,1);
+            }
+            this.modalData.detail.cost = parseInt(this.modalData.detail.cost) - parseInt(this.modalData.excost);
+          } else {
+            if(this.textChange.includes(index) == false){
+              this.textChange.push(index);
+            }
+          }
+          break;
+        case "source":
+          this.modalData.exsource += 1;
+          this.modalData.detail.source = parseInt(this.modalData.detail.source) + 1;
+          
+          if(this.modalData.exsource == 0){
+            let id = this.textChange.indexOf(index);
+            if(id > -1){
+              this.textChange.splice(id,1);
+            }
+            this.modalData.detail.source = parseInt(this.modalData.detail.source) - parseInt(this.modalData.exsource);
+          } else {
+            if(this.textChange.includes(index) == false){
+              this.textChange.push(index);
+            }
+          }
+          break;
+        case "AP":
+          this.modalData.exap += 10;
+          this.modalData.detail.AP = parseInt(this.modalData.detail.AP) + 10;
+          
+          if(this.modalData.exap == 0){
+            let id = this.textChange.indexOf(index);
+            if(id > -1){
+              this.textChange.splice(id,1);
+            }
+            this.modalData.detail.AP = parseInt(this.modalData.detail.AP) - parseInt(this.modalData.exap);
+          } else {
+            if(this.textChange.includes(index) == false){
+              this.textChange.push(index);
+            }
+          }
+          break;
+        case "DP":
+          this.modalData.exdp += 10;
+          this.modalData.detail.DP = parseInt(this.modalData.detail.DP) + 10;
+          
+          if(this.modalData.exdp == 0){
+            let id = this.textChange.indexOf(index);
+            if(id > -1){
+              this.textChange.splice(id,1);
+            }
+            this.modalData.detail.DP = parseInt(this.modalData.detail.DP) - parseInt(this.modalData.exdp);
+          } else {
+            if(this.textChange.includes(index) == false){
+              this.textChange.push(index);
+            }
+          }
+          break;
+      }
+    },
+    minusTableValue(index, col) {
+      switch(col){
+        case "cost":
+          this.modalData.excost -= 1;
+          this.modalData.detail.cost = parseInt(this.modalData.detail.cost) - 1;
+          
+          if(this.modalData.excost == 0){
+            let id = this.textChange.indexOf(index);
+            if(id > -1){
+              this.textChange.splice(id,1);
+            }
+            this.modalData.detail.cost = parseInt(this.modalData.detail.cost) - parseInt(this.modalData.excost);
+          } else {
+            if(this.textChange.includes(index) == false){
+              this.textChange.push(index);
+            }
+          }
+          break;
+        case "source":
+          this.modalData.exsource -= 1;
+          this.modalData.detail.source = parseInt(this.modalData.detail.source) - 1;
+          
+          if(this.modalData.exsource == 0){
+            let id = this.textChange.indexOf(index);
+            if(id > -1){
+              this.textChange.splice(id,1);
+            }
+            this.modalData.detail.source = parseInt(this.modalData.detail.source) - parseInt(this.modalData.exsource);
+          } else {
+            if(this.textChange.includes(index) == false){
+              this.textChange.push(index);
+            }
+          }
+          break;
+        case "AP":
+          this.modalData.exap -= 10;
+          this.modalData.detail.AP = parseInt(this.modalData.detail.AP) - 10;
+          
+          if(this.modalData.exap == 0){
+            let id = this.textChange.indexOf(index);
+            if(id > -1){
+              this.textChange.splice(id,1);
+            }
+            this.modalData.detail.AP = parseInt(this.modalData.detail.AP) - parseInt(this.modalData.exap);
+          } else {
+            if(this.textChange.includes(index) == false){
+              this.textChange.push(index);
+            }
+          }
+          break;
+        case "DP":
+          this.modalData.exdp -= 10;
+          this.modalData.detail.DP = parseInt(this.modalData.detail.DP) - 10;
+          
+          if(this.modalData.exdp == 0){
+            let id = this.textChange.indexOf(index);
+            if(id > -1){
+              this.textChange.splice(id,1);
+            }
+            this.modalData.detail.DP = parseInt(this.modalData.detail.DP) - parseInt(this.modalData.exdp);
+          } else {
+            if(this.textChange.includes(index) == false){
+              this.textChange.push(index);
+            }
+          }
+          break;
+      }
+    },
+    resetTableValue(index, col) {
+
+      let id = this.textChange.indexOf(index);
+      if(id > -1){
+        this.textChange.splice(id,1);
+      }
+
+      switch(col){
+        case "cost":
+          this.modalData.detail.cost = parseInt(this.modalData.detail.cost) - parseInt(this.modalData.excost);
+          this.modalData.excost = 0;
+          
+          break;
+        case "source":
+          this.modalData.detail.source = parseInt(this.modalData.detail.source) - parseInt(this.modalData.exsource);
+          this.modalData.exsource = 0;
+          
+          break;
+        case "AP":
+          this.modalData.detail.AP = parseInt(this.modalData.detail.AP) - parseInt(this.modalData.exap);
+          this.modalData.exap = 0;
+          
+          break;
+        case "DP":
+          this.modalData.detail.DP = parseInt(this.modalData.detail.DP) - parseInt(this.modalData.exdp);
+          this.modalData.exdp = 0;
+
+          break;
+      }
+
+      console.log(this.textChange);
+    }
   },
   computed: {
     dragOptions() {
@@ -396,7 +659,7 @@ export default {
         disabled: false,
         ghostClass: "ghost",
       };
-    },
+    }
   },
   mounted() {
     this.$bus.$on("draw-from-deck",(drawn_card_list) => {
@@ -447,21 +710,21 @@ export default {
   min-height: 20px;
   max-width: 100%;
 }
-.item {
+.hand-item {
   cursor: move;
   float: left;
   //width: 50%;
   //height: 300px;
-  background-image: url("../PM_Back.jpg");
+  //background-image: url("../PM_Back.jpg");
   background-size: 100%;
   background-repeat: no-repeat;
   //background-position: center;
   padding: 0;
 }
-.item i {
+.hand-item i {
   cursor: pointer;
 }
-.item img {
+.hand-item img {
   vertical-align: top;
   max-width: 100%;
   opacity: 0;
