@@ -37,7 +37,7 @@ html,body{
 	float: left;
 	width: 780px;
 	height: 100%;
-	z-index: 5;
+
 	min-height: var(--mnHt * 2);
 }
 
@@ -45,16 +45,16 @@ html,body{
 	float: right;
 	width: 120px;
 	height: 100%;
-	z-index: 100;
+
 	min-height: var(--mnHt * 2);
 }
 
 #main-area {
 	/*float: left;*/
-	position: relative;
+
 	width: 100%;
 	height: 50%;
-	z-index: 10;
+
 	/*min-height: var(--mnHt);*/
 	/*margin-right: 13%;*/
 	margin-left: 2vw;
@@ -68,10 +68,10 @@ html,body{
 
 #support-area {
 	/*float: left;*/
-	position: relative;
+
 	width: 100%;
 	height: 50%;
-	z-index: 10;
+
 	/*min-height: var(--mnHt);*/
 	
 	margin-left: 2vw;
@@ -84,10 +84,10 @@ html,body{
 }
 
 #point-area {
-	position: relative;
+
 	width: 100%;
 	height: 100%;
-	z-index: 30;
+
 	/*min-height: calc(var(--mnHt) * 2);*/
 	background: skyblue;
 	overflow-y: auto;
@@ -108,19 +108,19 @@ html,body{
 }
 
 .hand-area {
-	position: relative;
+
 	float: left;
 	width: 650px;
 	height: 100%;
-	z-index: 10;
+
 }
 
 .deck-stack{
-	position: relative;
+
 	float: right;
 	width: 240px;
 	height: 100%;
-	z-index: 30;
+
 }
 
 #hand {
@@ -164,10 +164,10 @@ html,body{
 }
 
 .temp-card-area {
-	position: relative;
+
 	width: 100%;
 	height: 600px;
-	z-index: 40;
+
 	background: AliceBlue;
 }
 

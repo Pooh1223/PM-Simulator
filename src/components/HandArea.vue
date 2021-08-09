@@ -649,7 +649,7 @@ export default {
       }
 
       console.log(this.textChange);
-    }
+    },
   },
   computed: {
     dragOptions() {
