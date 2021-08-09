@@ -7,11 +7,56 @@
       hide-backdrop
       :data="modalData">
       <div class="card-container">
-        <img src="../PM_Back.jpg" />
+        <img :src="modalData === null ? '../PM_Back.jpg' : modalData.detail.img_url" />
         <div class="card-attr">
-          <p class="my-2">
-            Test ,Test {{modalData}}
-          </p>
+          <!--<b-table striped hover :items="modalData === null ? [] : addInArray(modalData.detail)"></b-table>-->
+
+          <table class="table table-striped">
+            <tbody>
+              <tr
+                v-for="(attr, index) in Object.entries(modalData.detail)"
+                :key="attr.card_number"
+                >
+                <th v-if="showTable(index)">{{attr[0]}}</th>
+                <td 
+                  :class="textChange.includes(index) ? 'text-danger' : 'text-dark'"
+                  v-if="showTable(index)"
+                  >
+                  {{attr[1]}}
+                </td>
+                <td>
+                  <b-button
+                    class="btn-line"
+                    variant="outline-danger"
+                    v-if="showTable(index) && showTableBtn(index)"
+                    @click="addTableValue(index,attr[0])"
+                    >
+                    +
+                  </b-button>
+                </td>
+                <td>
+                  <b-button
+                    class="btn-line"
+                    variant="outline-danger"
+                    v-if="showTable(index) && showTableBtn(index)"
+                    @click="minusTableValue(index,attr[0])"
+                    >
+                    -
+                  </b-button>
+                </td>
+                <td>
+                  <b-button
+                    class="btn-line"
+                    variant="outline-danger"
+                    v-if="showTable(index) && showTableBtn(index)"
+                    @click="resetTableValue(index,attr[0])"
+                    >
+                    Reset
+                  </b-button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </b-modal>
@@ -33,13 +78,17 @@
       >
         
         <div
-          :class = "index % 5 == 0 ? 'item col-2 offset-1' : 'item col-2' "
+          :class = "index % 5 == 0 ? 'support-item col-2 offset-1' : 'support-item col-2' "
           v-for="(element, index) in card_list"
           :key="'ma-' + index"
           v-b-modal.card-detail
-          @click="openModal(element.order)"
+          @click="openModal(element)"
         >
-          <img src="../PM_Back.jpg" />
+          <img 
+            :src="element.detail.img_url"
+            :class="card_direct[element.order - 1] == false ? '' : 'col-2 rotate'"
+            style="width: 100%"
+            />
           <i
             :class="
               element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'
@@ -51,8 +100,9 @@
           <draggable
             class="overlap-card-list"
             tag="div"
-            v-model="card_list"
+            v-model="modalData.overlap"
             v-bind="dragOptions"
+            :emptyInsertThreshold="150"
             @start="drag = true"
             @end="drag = false"
             v-if="showDialog[element.order]"
@@ -65,13 +115,17 @@
             >
               
               <div
-                class="item col-md-6" 
-                v-for="element in card_list"
+                class="support-item col-md-6" 
+                v-for="element in modalData.overlap"
                 :key="element.order"
                 v-b-modal.card-detail
-                @click="openModal(element.order)"
+                @click="openModal(element)"
               >
-                <img src="../PM_Back.jpg" />
+                <img 
+                  :src="element.detail.img_url"
+                  :class="card_direct[element.order - 1] == false ? '' : 'col-2 rotate'"
+                  style="width: 100%"
+                  />
                 <i
                   :class="
                     element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'
@@ -90,6 +144,13 @@
               @click.stop="openDialog(element.order)">
               Overlap
             </b-button>
+
+            <b-button
+              id="rest"
+              variant="outline-primary"
+              @click.stop="toggleRotateCard(element.order - 1)">
+              {{card_rest[element.order - 1]}}
+            </b-button>
           </div>
         </div>
       </transition-group>
@@ -105,8 +166,11 @@ import draggable from "vuedraggable";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
-const message = ["1", "2", "3", "4", "5", "6", "7", "8"];
-const showd = [false,false,false,false,false,false,false,false];
+//const message = ["1", "2", "3", "4", "5", "6", "7", "8"];
+const showd = [false,false,false,false,false,false,false,false,false];
+const img_state = [false,false,false,false,false,false,false,false];
+const cimg = ["PM_Back.jpg","PM_Back.jpg","PM_Back.jpg","PM_Back.jpg","PM_Back.jpg","PM_Back.jpg","PM_Back.jpg","PM_Back.jpg"];
+const cards_state = ["Rest","Rest","Rest","Rest","Rest","Rest","Rest","Rest"];
 
 export default {
   name: "main-area",
@@ -118,17 +182,28 @@ export default {
     //DropArea,
   },
   data() {
-    const rowofcard = 5;
-    const mapped_list = message.map((name, index) => {
-      return { name, order: index + 1 };
+    //const mapped_list = message.map((name, index) => {
+    //  return { name, order: index + 1 };
+    //});
+
+    const mydata = require("../data.json");
+    //console.log(mydata);
+    const tester = mydata.map((detail, index) => {
+      return {detail, order: index + 1, excost: 0, exsource: 0, exap: 0, exdp: 0, overlap: []};
     });
+    console.log(tester);
+    //console.log(tester.slice(0,1));
 
     return {
-      row_of_card: rowofcard,
-      card_list: mapped_list,
+      card_list: tester.slice(0,8),
       drag: false,
-      modalData: null,
+      modalData: tester[0],
+      card_bgimg: cimg,
+      card_rest: cards_state,
+      card_direct: img_state,
       showDialog: showd,
+      textChange: [],
+
       from_which_card: null,
       lastPlace: null,
       lastPlaceId: 0,
@@ -143,9 +218,11 @@ export default {
       console.log("jizz:" + data);
       this.modalData = data;
     },
+    // dialog
     openDialog (data) {
       //this.showDialog[data] = !this.showDialog[data];
       // vue can't detect an element changed or not in an array
+
       this.showDialog = this.showDialog.map((el,i) => 
         i === data ? !el : el
       );
@@ -154,10 +231,30 @@ export default {
       console.log(this.card_list);
       console.log(this.showDialog);
     },
-    closeDialog () {
-      this.showDialog = false;
-      console.log("it should close!");
+    toggleRotateCard(id) {
+      //if(this.card_bgimg[id].includes('Side')){
+      //  // remove
+
+      //  this.card_bgimg.splice(id,1,"PM_Back.jpg");
+      //  this.card_rest.splice(id,1,"Rest");
+
+      //  console.log("rotate back!");
+      //  console.log(this.card_bgimg);
+      //} else {
+      //  // add
+
+      //  this.card_bgimg.splice(id,1,"PM_Back_Side.jpg");
+      //  this.card_rest.splice(id,1,"Stand");
+
+      //  console.log("rotate!");
+      //  console.log(this.card_bgimg);
+      //}
+
+      this.card_direct = this.card_direct.map((el,i) => 
+        i === id ? !el : el
+      );
     },
+
     dropArea(place){
       console.log("move");
       console.log(place);
@@ -222,6 +319,269 @@ export default {
 
       
     },
+
+    // modal table
+    
+    addInArray(data) {
+      return [data];
+    },
+    showTable(id) {
+      return (id != 0);
+    },
+    showTableBtn(id) {
+      return (id == 6 || id == 7 || id == 10 || id == 11);
+    },
+    // modify table value
+
+    // 6 is the index of cost property in detail
+    // 7 is the index of source property in detail
+    // 10 is the index of AP property in detail
+    // 11 is the index of DP property in detail
+
+    addTableValue(index, col) {
+
+      switch(col){
+        case "cost":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.cost)) == true){
+            // not a number!
+            return;
+          }
+
+          this.modalData.excost += 1;
+          this.modalData.detail.cost = parseInt(this.modalData.detail.cost) + 1;
+          
+          if(this.modalData.excost == 0){
+            let id = this.textChange.indexOf(index);
+            if(id > -1){
+              this.textChange.splice(id,1);
+            }
+            this.modalData.detail.cost = parseInt(this.modalData.detail.cost) - parseInt(this.modalData.excost);
+          } else {
+            if(this.textChange.includes(index) == false){
+              this.textChange.push(index);
+            }
+          }
+          break;
+        case "source":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.source)) == true){
+            // not a number!
+            return;
+          }
+
+          this.modalData.exsource += 1;
+          this.modalData.detail.source = parseInt(this.modalData.detail.source) + 1;
+          
+          if(this.modalData.exsource == 0){
+            let id = this.textChange.indexOf(index);
+            if(id > -1){
+              this.textChange.splice(id,1);
+            }
+            this.modalData.detail.source = parseInt(this.modalData.detail.source) - parseInt(this.modalData.exsource);
+          } else {
+            if(this.textChange.includes(index) == false){
+              this.textChange.push(index);
+            }
+          }
+          break;
+        case "AP":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.AP)) == true){
+            // not a number!
+            return;
+          }
+
+          this.modalData.exap += 10;
+          this.modalData.detail.AP = parseInt(this.modalData.detail.AP) + 10;
+          
+          if(this.modalData.exap == 0){
+            let id = this.textChange.indexOf(index);
+            if(id > -1){
+              this.textChange.splice(id,1);
+            }
+            this.modalData.detail.AP = parseInt(this.modalData.detail.AP) - parseInt(this.modalData.exap);
+          } else {
+            if(this.textChange.includes(index) == false){
+              this.textChange.push(index);
+            }
+          }
+          break;
+        case "DP":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.DP)) == true){
+            // not a number!
+            return;
+          }
+
+          this.modalData.exdp += 10;
+          this.modalData.detail.DP = parseInt(this.modalData.detail.DP) + 10;
+          
+          if(this.modalData.exdp == 0){
+            let id = this.textChange.indexOf(index);
+            if(id > -1){
+              this.textChange.splice(id,1);
+            }
+            this.modalData.detail.DP = parseInt(this.modalData.detail.DP) - parseInt(this.modalData.exdp);
+          } else {
+            if(this.textChange.includes(index) == false){
+              this.textChange.push(index);
+            }
+          }
+          break;
+      }
+    },
+    minusTableValue(index, col) {
+      switch(col){
+        case "cost":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.cost)) == true){
+            // not a number!
+            return;
+          }
+
+          this.modalData.excost -= 1;
+          this.modalData.detail.cost = parseInt(this.modalData.detail.cost) - 1;
+          
+          if(this.modalData.excost == 0){
+            let id = this.textChange.indexOf(index);
+            if(id > -1){
+              this.textChange.splice(id,1);
+            }
+            this.modalData.detail.cost = parseInt(this.modalData.detail.cost) - parseInt(this.modalData.excost);
+          } else {
+            if(this.textChange.includes(index) == false){
+              this.textChange.push(index);
+            }
+          }
+          break;
+        case "source":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.source)) == true){
+            // not a number!
+            return;
+          }
+
+          this.modalData.exsource -= 1;
+          this.modalData.detail.source = parseInt(this.modalData.detail.source) - 1;
+          
+          if(this.modalData.exsource == 0){
+            let id = this.textChange.indexOf(index);
+            if(id > -1){
+              this.textChange.splice(id,1);
+            }
+            this.modalData.detail.source = parseInt(this.modalData.detail.source) - parseInt(this.modalData.exsource);
+          } else {
+            if(this.textChange.includes(index) == false){
+              this.textChange.push(index);
+            }
+          }
+          break;
+        case "AP":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.AP)) == true){
+            // not a number!
+            return;
+          }
+
+          this.modalData.exap -= 10;
+          this.modalData.detail.AP = parseInt(this.modalData.detail.AP) - 10;
+          
+          if(this.modalData.exap == 0){
+            let id = this.textChange.indexOf(index);
+            if(id > -1){
+              this.textChange.splice(id,1);
+            }
+            this.modalData.detail.AP = parseInt(this.modalData.detail.AP) - parseInt(this.modalData.exap);
+          } else {
+            if(this.textChange.includes(index) == false){
+              this.textChange.push(index);
+            }
+          }
+          break;
+        case "DP":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.DP)) == true){
+            // not a number!
+            return;
+          }
+
+          this.modalData.exdp -= 10;
+          this.modalData.detail.DP = parseInt(this.modalData.detail.DP) - 10;
+          
+          if(this.modalData.exdp == 0){
+            let id = this.textChange.indexOf(index);
+            if(id > -1){
+              this.textChange.splice(id,1);
+            }
+            this.modalData.detail.DP = parseInt(this.modalData.detail.DP) - parseInt(this.modalData.exdp);
+          } else {
+            if(this.textChange.includes(index) == false){
+              this.textChange.push(index);
+            }
+          }
+          break;
+      }
+    },
+    resetTableValue(index, col) {
+
+      let id = this.textChange.indexOf(index);
+      if(id > -1){
+        this.textChange.splice(id,1);
+      }
+
+      switch(col){
+        case "cost":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.cost)) == true){
+            // not a number!
+            return;
+          }
+
+          this.modalData.detail.cost = parseInt(this.modalData.detail.cost) - parseInt(this.modalData.excost);
+          this.modalData.excost = 0;
+          
+          break;
+        case "source":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.source)) == true){
+            // not a number!
+            return;
+          }
+
+          this.modalData.detail.source = parseInt(this.modalData.detail.source) - parseInt(this.modalData.exsource);
+          this.modalData.exsource = 0;
+          
+          break;
+        case "AP":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.AP)) == true){
+            // not a number!
+            return;
+          }
+
+          this.modalData.detail.AP = parseInt(this.modalData.detail.AP) - parseInt(this.modalData.exap);
+          this.modalData.exap = 0;
+          
+          break;
+        case "DP":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.DP)) == true){
+            // not a number!
+            return;
+          }
+
+          this.modalData.detail.DP = parseInt(this.modalData.detail.DP) - parseInt(this.modalData.exdp);
+          this.modalData.exdp = 0;
+
+          break;
+      }
+
+      console.log(this.textChange);
+    },
+
+    // drop
+
     drop(data) {
       this.drag = false;
       let dropCard = this.dragCard;
@@ -508,27 +868,31 @@ export default {
   min-height: 20px;
   max-width: 100%;
 }
-.item {
+.support-item {
   cursor: move;
   float: left;
   //width: 50%;
   //height: 300px;
-  background-image: url("../PM_Back.jpg");
+  //background-image: url("../PM_Back.jpg");
   background-size: 100%;
   background-repeat: no-repeat;
   //background-position: center;
   padding: 0;
 }
-.item i {
+.support-item i {
   cursor: pointer;
 }
-.item img {
+.support-item img {
   vertical-align: top;
   max-width: 100%;
-  opacity: 0;
+  opacity: 1;
 }
 #overlap {
+  width: 90%;
   margin-bottom: 5px;
+}
+#rest {
+  width: 90%;
 }
 .card-container {
   overflow-y: auto;

@@ -124,9 +124,9 @@ export default {
     console.log(mapped_list);
 
     const mydata = require("../data.json");
-    console.log(mydata);
+    //console.log(mydata);
     const tester = mydata.map((detail, index) => {
-      return {detail, order: index + 1, excost: 0, exsource: 0, exap: 0, exdp: 0};
+      return {detail, order: index + 1, excost: 0, exsource: 0, exap: 0, exdp: 0,overlap: []};
     });
     console.log(tester);
     //console.log(tester.slice(0,1));
@@ -485,6 +485,12 @@ export default {
     addTableValue(index, col) {
       switch(col){
         case "cost":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.cost)) == true){
+            // not a number!
+            return;
+          }
+
           this.modalData.excost += 1;
           this.modalData.detail.cost = parseInt(this.modalData.detail.cost) + 1;
           
@@ -501,6 +507,12 @@ export default {
           }
           break;
         case "source":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.source)) == true){
+            // not a number!
+            return;
+          }
+
           this.modalData.exsource += 1;
           this.modalData.detail.source = parseInt(this.modalData.detail.source) + 1;
           
@@ -517,6 +529,12 @@ export default {
           }
           break;
         case "AP":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.AP)) == true){
+            // not a number!
+            return;
+          }
+
           this.modalData.exap += 10;
           this.modalData.detail.AP = parseInt(this.modalData.detail.AP) + 10;
           
@@ -533,6 +551,12 @@ export default {
           }
           break;
         case "DP":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.DP)) == true){
+            // not a number!
+            return;
+          }
+
           this.modalData.exdp += 10;
           this.modalData.detail.DP = parseInt(this.modalData.detail.DP) + 10;
           
@@ -553,6 +577,12 @@ export default {
     minusTableValue(index, col) {
       switch(col){
         case "cost":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.cost)) == true){
+            // not a number!
+            return;
+          }
+
           this.modalData.excost -= 1;
           this.modalData.detail.cost = parseInt(this.modalData.detail.cost) - 1;
           
@@ -569,6 +599,12 @@ export default {
           }
           break;
         case "source":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.source)) == true){
+            // not a number!
+            return;
+          }
+
           this.modalData.exsource -= 1;
           this.modalData.detail.source = parseInt(this.modalData.detail.source) - 1;
           
@@ -585,6 +621,12 @@ export default {
           }
           break;
         case "AP":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.AP)) == true){
+            // not a number!
+            return;
+          }
+
           this.modalData.exap -= 10;
           this.modalData.detail.AP = parseInt(this.modalData.detail.AP) - 10;
           
@@ -601,6 +643,12 @@ export default {
           }
           break;
         case "DP":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.DP)) == true){
+            // not a number!
+            return;
+          }
+
           this.modalData.exdp -= 10;
           this.modalData.detail.DP = parseInt(this.modalData.detail.DP) - 10;
           
@@ -627,21 +675,45 @@ export default {
 
       switch(col){
         case "cost":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.cost)) == true){
+            // not a number!
+            return;
+          }
+
           this.modalData.detail.cost = parseInt(this.modalData.detail.cost) - parseInt(this.modalData.excost);
           this.modalData.excost = 0;
           
           break;
         case "source":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.source)) == true){
+            // not a number!
+            return;
+          }
+
           this.modalData.detail.source = parseInt(this.modalData.detail.source) - parseInt(this.modalData.exsource);
           this.modalData.exsource = 0;
           
           break;
         case "AP":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.AP)) == true){
+            // not a number!
+            return;
+          }
+
           this.modalData.detail.AP = parseInt(this.modalData.detail.AP) - parseInt(this.modalData.exap);
           this.modalData.exap = 0;
           
           break;
         case "DP":
+          // check if not a number
+          if(isNaN(parseInt(this.modalData.detail.DP)) == true){
+            // not a number!
+            return;
+          }
+
           this.modalData.detail.DP = parseInt(this.modalData.detail.DP) - parseInt(this.modalData.exdp);
           this.modalData.exdp = 0;
 
