@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container-fluid">
 
     <b-modal 
       id="main-detail"
@@ -84,9 +84,15 @@
           :class = "index % 5 == 0 ? 'main-item col-2 offset-1' : 'main-item col-2' "
           v-b-modal.main-detail
           @click="openModal(element.order)"
-          :style="{backgroundImage: 'url(' + require('../' + card_bgimg[element.order - 1]) + ')' }"
+          
         >
-          <img :src="require('../' + card_bgimg[element.order - 1])" />
+          <!--<img :src="require('../' + card_bgimg[element.order - 1])" />-->
+
+          <img 
+            :src="element.detail.img_url"
+            :class="card_direct[element.order - 1] == false ? '' : 'col-2 rotate'"
+            style="width: 100%"
+            />
           <i
             :class="
               element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'
@@ -158,8 +164,9 @@ import draggable from "vuedraggable";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
-const message = ["1", "2", "3", "4", "5", "6", "7", "8"];
+//const message = ["1", "2", "3", "4", "5", "6", "7", "8"];
 const showd = [false,false,false,false,false,false,false,false,false];
+const img_state = [false,false,false,false,false,false,false,false];
 const cimg = ["PM_Back.jpg","PM_Back.jpg","PM_Back.jpg","PM_Back.jpg","PM_Back.jpg","PM_Back.jpg","PM_Back.jpg","PM_Back.jpg"];
 const cards_state = ["Rest","Rest","Rest","Rest","Rest","Rest","Rest","Rest"];
 
@@ -173,9 +180,9 @@ export default {
     //DropArea,
   },
   data() {
-    const mapped_list = message.map((name, index) => {
-      return { name, order: index + 1 };
-    });
+    //const mapped_list = message.map((name, index) => {
+    //  return { name, order: index + 1 };
+    //});
 
     const mydata = require("../data.json");
     console.log(mydata);
@@ -187,9 +194,10 @@ export default {
 
     return {
       drag: false,
-      card_list: mapped_list,
+      card_list: tester.slice(0,8),
       card_bgimg: cimg,
       card_rest: cards_state,
+      card_direct: img_state,
       textChange: [],
 
       modalData: tester[0],
@@ -223,23 +231,27 @@ export default {
       console.log(this.showDialog);
     },
     toggleRotateCard(id) {
-      if(this.card_bgimg[id].includes('Side')){
-        // remove
+      //if(this.card_bgimg[id].includes('Side')){
+      //  // remove
 
-        this.card_bgimg.splice(id,1,"PM_Back.jpg");
-        this.card_rest.splice(id,1,"Rest");
+      //  this.card_bgimg.splice(id,1,"PM_Back.jpg");
+      //  this.card_rest.splice(id,1,"Rest");
 
-        console.log("rotate back!");
-        console.log(this.card_bgimg);
-      } else {
-        // add
+      //  console.log("rotate back!");
+      //  console.log(this.card_bgimg);
+      //} else {
+      //  // add
 
-        this.card_bgimg.splice(id,1,"PM_Back_Side.jpg");
-        this.card_rest.splice(id,1,"Stand");
+      //  this.card_bgimg.splice(id,1,"PM_Back_Side.jpg");
+      //  this.card_rest.splice(id,1,"Stand");
 
-        console.log("rotate!");
-        console.log(this.card_bgimg);
-      }
+      //  console.log("rotate!");
+      //  console.log(this.card_bgimg);
+      //}
+
+      this.card_direct = this.card_direct.map((el,i) => 
+        i === id ? !el : el
+      );
     },
 
     // modal table
@@ -791,7 +803,7 @@ export default {
   float: left;
   //width: 50%;
   //height: 300px;
-  background-image: url("../PM_Back.jpg");
+  //background-image: url("../PM_Back.jpg");
   background-size: 100%;
   background-repeat: no-repeat;
   //background-position: center;
@@ -804,7 +816,7 @@ export default {
 .main-item img {
   vertical-align: top;
   max-width: 100%;
-  opacity: 0;
+  opacity: 1;
 }
 #overlap {
   width: 90%;
@@ -830,13 +842,13 @@ export default {
 }
 
 .rotate {
-  background-image: url("../PM_Back_Side.jpg") 0 0 repeat;
-  background-size: 100%;
-  background-repeat: no-repeat;
-  //-webkit-transform: rotate(90deg);
-  //-moz-transform: rotate(90deg);
-  //-ms-transform: rotate(90deg);
-  //-o-transform: rotate(90deg);
-  //transform: rotate(90deg);
+  //background-image: url("../PM_Back_Side.jpg") 0 0 repeat;
+  //background-size: 100%;
+  //background-repeat: no-repeat;
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  transform: rotate(90deg);
 }
 </style>
