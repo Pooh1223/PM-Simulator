@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <b-modal 
-      id="card-detail"
+      id="support-detail"
       scrollable
       title="Card-Detail"
       hide-backdrop
@@ -60,6 +60,7 @@
         </div>
       </div>
     </b-modal>
+
     <draggable
       class="support-card-list"
       tag="div"
@@ -118,7 +119,7 @@
                 class="support-item col-md-6" 
                 v-for="element in modalData.overlap"
                 :key="element.order"
-                v-b-modal.card-detail
+                v-b-modal.support-detail
                 @click="openModal(element)"
               >
                 <img 
@@ -255,6 +256,7 @@ export default {
       );
     },
 
+    // drop
     dropArea(place){
       console.log("move");
       console.log(place);

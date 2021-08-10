@@ -84,7 +84,6 @@
           :class = "index % 5 == 0 ? 'main-item col-2 offset-1' : 'main-item col-2' "
           v-b-modal.main-detail
           @click="openModal(element)"
-          
         >
           <!--<img :src="require('../' + card_bgimg[element.order - 1])" />-->
 

@@ -1,5 +1,49 @@
 <template>
   <div class="container">
+
+    <b-modal 
+      id="point-detail"
+      scrollable
+      title="Card-Detail"
+      hide-backdrop
+      :data="modalData">
+      <div class="card-container">
+        <img :src="modalData === null ? '../PM_Back.jpg' : modalData.detail.img_url" />
+        <div class="card-attr">
+          <!--<b-table striped hover :items="modalData === null ? [] : addInArray(modalData.detail)"></b-table>-->
+
+          <table class="table table-striped">
+            <tbody>
+              <tr>
+                <td>
+                  <b-button
+                    class="btn-line"
+                    variant="outline-danger"
+                    @click="usePointSource(modalData.order - 1)"
+                    >
+                    Reset
+                  </b-button>
+                </td>
+              </tr>
+              <tr
+                v-for="(attr, index) in Object.entries(modalData.detail)"
+                :key="attr.card_number"
+                >
+                <th v-if="showTable(index)">{{attr[0]}}</th>
+                <td 
+                  :class="textChange.includes(index) ? 'text-danger' : 'text-dark'"
+                  v-if="showTable(index)"
+                  >
+                  {{attr[1]}}
+                </td>
+                
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </b-modal>
+
     <draggable
       class="point-list"
       tag="div"
@@ -12,20 +56,22 @@
     >
       <transition-group
         id="points"
-        class="row"
+        
         type="transition"
         :name="!drag ? 'flip-list' : null"
       >
         <div
-          
           v-for="(element,index) in card_list"
           :key="element.order"
-          :class="index == card_list.length - 1 ? 'point last-point' : 'point'"
+          :class="index == card_list.length - 1 ? 'point last-point rotatem90' : 'point rotatem90' "
+          v-b-modal.point-detail
+          @click="openModal(element)"
         >
+          <!--:style="{backgroundImage : 'url(' + test1 + ')' }"-->
           <div
-            class="point-cards col"
+            class="point-cards"
           >
-            <img src="../PM_Back.jpg" />
+            <img :src="element.detail.img_url" style="{opacity: source_used[element.order - 1]}" />
             <i
               :class="
                 element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'
@@ -34,7 +80,7 @@
               aria-hidden="true"
             ></i>
           </div>
-          <div class="w-100"></div>
+          
         </div>
       </transition-group>
     </draggable>
@@ -45,7 +91,11 @@
 <script>
 import draggable from "vuedraggable";
 
-const message = ["1", "2", "3", "4", "5", "6", "7"];
+//const message = ["1", "2", "3", "4", "5", "6", "7"];
+const showd = [false,false,false,false,false,false,false,false,false];
+const card_used = [1,1,1,1,1,1,1];
+const cards_state = ["Reset","Reset","Reset","Reset","Reset","Reset","Reset","Reset"];
+
 export default {
   name: "points",
   display: "Points",
@@ -54,15 +104,31 @@ export default {
     draggable,
   },
   data() {
-    const rowofcard = 5;
-    const mapped_list = message.map((name, index) => {
-      return { name, order: index + 1 };
+    //const rowofcard = 5;
+    //const mapped_list = message.map((name, index) => {
+    //  return { name, order: index + 1 };
+    //});
+
+    const mydata = require("../data.json");
+    //console.log(mydata);
+    const tester = mydata.map((detail, index) => {
+      return {detail, order: index + 1, excost: 0, exsource: 0, exap: 0, exdp: 0, overlap: []};
     });
+    console.log(tester);
+    //console.log(tester.slice(0,1));
 
     return {
-      row_of_card: rowofcard,
-      card_list: mapped_list,
+      card_list: tester.slice(0,7),
       drag: false,
+      modalData: tester[0],
+      source_used: card_used,
+      card_rest: cards_state,
+      showDialog: showd,
+      textChange: [],
+      test1: require('../PM_Back.jpg'),
+      test2: "http://www.p-memories.com/images/product/DNMC3/DNMC3_01-011b.jpg",
+
+      from_which_card: null,
       lastPlace: null,
       lastPlaceId: 0,
       timer: setTimeout(() => {
@@ -72,6 +138,40 @@ export default {
     };
   },
   methods: {
+    openModal(data) {
+      console.log("jizz:" + data);
+      this.modalData = data;
+    },
+    // dialog
+    openDialog (data) {
+      //this.showDialog[data] = !this.showDialog[data];
+      // vue can't detect an element changed or not in an array
+
+      this.showDialog = this.showDialog.map((el,i) => 
+        i === data ? !el : el
+      );
+      this.from_which_card = data;
+      console.log("it should open!");
+      console.log(this.card_list);
+      console.log(this.showDialog);
+    },
+
+    // modal table
+    
+    addInArray(data) {
+      return [data];
+    },
+    showTable(id) {
+      return (id != 0);
+    },
+    usePointSource(id) {
+      this.source_used = this.source_used.map((el,i) => 
+        i === id ? (1.3 - el) : el
+      );
+      console.log(this.source_used);
+    },
+
+    // drop
     dropArea(place){
       console.log("move");
       console.log(place);
@@ -426,16 +526,21 @@ export default {
 .point-list {
   min-height: 20px;
   max-width: 100%;
+  padding: 0;
+}
+.point-cards {
+  padding: 0;
 }
 .point {
   cursor: move;
   float: left;
   //width: 50%;
   //height: 300px;
-  background-image: url("../PM_Back_Side.jpg");
+  //background-image: url("../PM_Back_Side.jpg");
   background-size: 100%;
   background-repeat: no-repeat;
   //background-position: center;
+  padding: 0;
 }
 .last-point {
   padding: 0;
@@ -447,6 +552,16 @@ export default {
 .point img {
   vertical-align: top;
   max-width: 100%;
-  opacity: 0;
+}
+
+.rotatem90 {
+  //background-image: url("../PM_Back_Side.jpg") 0 0 repeat;
+  //background-size: 100%;
+  //background-repeat: no-repeat;
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  transform: rotate(-90deg);
 }
 </style>
