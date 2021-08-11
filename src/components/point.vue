@@ -3,6 +3,7 @@
 
     <b-modal 
       id="point-detail"
+      ref="point-modal"
       scrollable
       title="Card-Detail"
       hide-backdrop
@@ -21,7 +22,7 @@
                     variant="outline-danger"
                     @click="usePointSource(modalData.order - 1)"
                     >
-                    Reset
+                    {{card_reset[modalData.order - 1]}}
                   </b-button>
                 </td>
               </tr>
@@ -71,7 +72,7 @@
           <div
             class="point-cards"
           >
-            <img :src="element.detail.img_url" style="{opacity: source_used[element.order - 1]}" />
+            <img :src="element.detail.img_url" :style="{opacity: source_used[element.order - 1]}" />
             <i
               :class="
                 element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'
@@ -94,7 +95,7 @@ import draggable from "vuedraggable";
 //const message = ["1", "2", "3", "4", "5", "6", "7"];
 const showd = [false,false,false,false,false,false,false,false,false];
 const card_used = [1,1,1,1,1,1,1];
-const cards_state = ["Reset","Reset","Reset","Reset","Reset","Reset","Reset","Reset"];
+const cards_state = ["Use","Use","Use","Use","Use","Use","Use","Use"];
 
 export default {
   name: "points",
@@ -122,7 +123,7 @@ export default {
       drag: false,
       modalData: tester[0],
       source_used: card_used,
-      card_rest: cards_state,
+      card_reset: cards_state,
       showDialog: showd,
       textChange: [],
       test1: require('../PM_Back.jpg'),
@@ -168,6 +169,15 @@ export default {
       this.source_used = this.source_used.map((el,i) => 
         i === id ? (1.3 - el) : el
       );
+
+      if(this.card_reset[id] == "Reset"){
+        this.card_reset.splice(id,1,"Use");
+      } else {
+        this.card_reset.splice(id,1,"Reset");
+      }
+
+      this.$refs["point-modal"].hide();
+
       console.log(this.source_used);
     },
 

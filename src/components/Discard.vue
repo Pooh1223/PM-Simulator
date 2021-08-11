@@ -147,36 +147,37 @@ export default {
       console.log(this.card_list);
     });
 
-    this.$bus.$on("support-to-discard",(card) => {
+    this.$bus.$on("support-to-discard",(card,ms) => {
       this.properDrop = true;
       this.dragCard = card;
       this.addFrom = "support";
 
       setTimeout(() => {
         this.properDrop = false;
-      },50);
+      },ms);
+
       console.log(this.card_list);
     });
 
-    this.$bus.$on("main-to-discard",(card) => {
+    this.$bus.$on("main-to-discard",(card,ms) => {
       this.properDrop = true;
       this.dragCard = card;
       this.addFrom = "main";
 
       setTimeout(() => {
         this.properDrop = false;
-      },50);
+      },ms);
       console.log(this.card_list);
     });
 
-    this.$bus.$on("point-to-discard",(card) => {
+    this.$bus.$on("point-to-discard",(card,ms) => {
       this.properDrop = true;
       this.dragCard = card;
       this.addFrom = "point";
 
       setTimeout(() => {
         this.properDrop = false;
-      },50);
+      },ms);
       console.log(this.card_list);
     });
 

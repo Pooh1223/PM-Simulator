@@ -532,7 +532,7 @@ export default {
       console.log(this.card_list);
     });
 
-    this.$bus.$on("support-to-deck",(card) => {
+    this.$bus.$on("support-to-deck",(card,ms) => {
       
       this.properDrop = true;
       this.dragCard = card;
@@ -540,11 +540,13 @@ export default {
       
       setTimeout(() => {
         this.properDrop = false;
-      },50);
+      },ms);
+
+      console.log("ms: " + ms);
       console.log(this.card_list);
     });
 
-    this.$bus.$on("main-to-deck",(card) => {
+    this.$bus.$on("main-to-deck",(card,ms) => {
       
       this.properDrop = true;
       this.dragCard = card;
@@ -552,11 +554,11 @@ export default {
       
       setTimeout(() => {
         this.properDrop = false;
-      },50);
+      },ms);
       console.log(this.card_list);
     });
 
-    this.$bus.$on("point-to-deck",(card) => {
+    this.$bus.$on("point-to-deck",(card,ms) => {
       
       this.properDrop = true;
       this.dragCard = card;
@@ -564,7 +566,7 @@ export default {
       
       setTimeout(() => {
         this.properDrop = false;
-      },50);
+      },ms);
 
       console.log(this.card_list);
     });
