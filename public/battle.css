@@ -5,24 +5,29 @@
 html,body{
 	margin: 0;
 	padding: 0;
+	white-space: nowrap;
 }
 
 /*battle field*/
 
 .you{
 	float: left;
+	
 	width: 900px;
 	height: 940px;
 	background: darkred;
 	display: inline-block;
+	white-space: normal;
 }
 
 .oppo{
 	//float: right;
+	
 	width: 900px;
 	height: 940px;
 	background: darkblue;
 	display: inline-block;
+	white-space: normal;
 }
 
 .upper-area {
@@ -37,7 +42,7 @@ html,body{
 	float: left;
 	width: 780px;
 	height: 100%;
-
+	z-index: 5;
 	min-height: var(--mnHt * 2);
 }
 
@@ -91,6 +96,7 @@ html,body{
 	/*min-height: calc(var(--mnHt) * 2);*/
 	background: skyblue;
 	overflow-y: auto;
+	overflow-x: hidden;
 	font-size: 1rem;
 }
 
