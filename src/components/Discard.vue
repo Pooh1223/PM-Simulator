@@ -181,6 +181,21 @@ export default {
       console.log(this.card_list);
     });
 
+    this.$bus.$on("card-stack-to-deck-stack",(card,ms,to,from) => {
+      
+      if(to == "discards"){
+        this.properDrop = true;
+        this.dragCard = card;
+        this.addFrom = from;
+        
+        setTimeout(() => {
+          this.properDrop = false;
+        },ms);
+
+        console.log(this.card_list);
+      }
+    });
+
     // cancel 
 
     this.$bus.$on("cancel-stack-drop",(area,id) => {
@@ -207,6 +222,27 @@ export default {
       console.log("Re-add-to-discard!");
     });
 
+
+    this.$bus.$on("add-to-again",(card,where,area) => {
+      if(where == "discards"){
+        this.card_list.unshift(card);
+        
+        // whether temp need to update 
+        if(area == "Discard"){
+          this.openTemp();
+        }
+
+        this.properDrop = true;
+        this.dragCard = card;
+        
+        setTimeout(() => {
+          this.properDrop = false;
+        },50);
+
+        console.log("Re-add-to-discard!");
+      }
+      
+    });
   },
   watch: {
     card_list(newVal,oldVal){

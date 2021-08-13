@@ -482,6 +482,7 @@ export default {
     stay(card) {
       if(this.properDrop == true){
         this.$bus.$emit("able-to-remove",this.addFrom);
+        this.$bus.$emit("jizz");
         this.card_list.unshift(card);
         console.log(this.addFrom);
         console.log(card);

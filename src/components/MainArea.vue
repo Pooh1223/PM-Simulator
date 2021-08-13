@@ -171,7 +171,6 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 //const message = ["1", "2", "3", "4", "5", "6", "7", "8"];
 const showd = [false,false,false,false,false,false,false,false,false];
 const img_state = [false,false,false,false,false,false,false,false];
-const cimg = ["PM_Back.jpg","PM_Back.jpg","PM_Back.jpg","PM_Back.jpg","PM_Back.jpg","PM_Back.jpg","PM_Back.jpg","PM_Back.jpg"];
 const cards_state = ["Rest","Rest","Rest","Rest","Rest","Rest","Rest","Rest"];
 
 export default {
@@ -184,22 +183,23 @@ export default {
     //DropArea,
   },
   data() {
-    //const mapped_list = message.map((name, index) => {
-    //  return { name, order: index + 1 };
-    //});
 
     const mydata = require("../data.json");
-    //console.log(mydata);
+
     const tester = mydata.map((detail, index) => {
       return {detail, order: index + 1, excost: 0, exsource: 0, exap: 0, exdp: 0, overlap: []};
     });
     console.log(tester);
-    //console.log(tester.slice(0,1));
+
+    for(let i = 0;i < tester.length;++i){
+      showd.push(false);
+      img_state.push(false);
+      cards_state.push("Rest");
+    }
 
     return {
       drag: false,
       card_list: tester.slice(0,8),
-      card_bgimg: cimg,
       card_rest: cards_state,
       card_direct: img_state,
       textChange: [],
@@ -235,24 +235,7 @@ export default {
       console.log(this.showDialog);
     },
     toggleRotateCard(id) {
-      //if(this.card_bgimg[id].includes('Side')){
-      //  // remove
-
-      //  this.card_bgimg.splice(id,1,"PM_Back.jpg");
-      //  this.card_rest.splice(id,1,"Rest");
-
-      //  console.log("rotate back!");
-      //  console.log(this.card_bgimg);
-      //} else {
-      //  // add
-
-      //  this.card_bgimg.splice(id,1,"PM_Back_Side.jpg");
-      //  this.card_rest.splice(id,1,"Stand");
-
-      //  console.log("rotate!");
-      //  console.log(this.card_bgimg);
-      //}
-
+     
       this.card_direct = this.card_direct.map((el,i) => 
         i === id ? !el : el
       );
@@ -843,7 +826,7 @@ export default {
       };
     },
   },
-  mount() {
+  mounted() {
     this.$bus.$on("able-to-remove",(where) => {
       if(where == "main"){
         this.card_list.splice(this.lastPlaceId,1);
@@ -871,6 +854,9 @@ export default {
 .ghost {
   opacity: 0.5;
   background: #c8ebfb;
+}
+@main-detail {
+  white-space: initial;
 }
 .card-list {
   min-height: 20px;

@@ -53,6 +53,7 @@
       :emptyInsertThreshold="150"
       @start="drag = true"
       @end="dropTest"
+      @choose="removeRotate"
       :move="dropArea"
     >
       <transition-group
@@ -62,9 +63,9 @@
         :name="!drag ? 'flip-list' : null"
       >
         <div
-          v-for="(element,index) in card_list"
+          v-for="(element) in card_list"
           :key="element.order"
-          :class="index == card_list.length - 1 ? 'point last-point rotatem90' : 'point rotatem90' "
+          :class="card_stand[element.order] == false ? 'point rotatem90' : 'point' "
           v-b-modal.point-detail
           @click="openModal(element)"
         >
@@ -96,6 +97,7 @@ import draggable from "vuedraggable";
 const showd = [false,false,false,false,false,false,false,false,false];
 const card_used = [1,1,1,1,1,1,1];
 const cards_state = ["Use","Use","Use","Use","Use","Use","Use","Use"];
+const cards_stand = [false];
 
 export default {
   name: "points",
@@ -118,12 +120,20 @@ export default {
     console.log(tester);
     //console.log(tester.slice(0,1));
 
+    for(let i = 0;i < tester.length;++i){
+      showd.push(false);
+      card_used.push(1);
+      cards_state.push("Use");
+      cards_stand.push(false);
+    }
+
     return {
-      card_list: tester.slice(0,7),
+      card_list: tester.slice(24,31),
       drag: false,
       modalData: tester[0],
       source_used: card_used,
       card_reset: cards_state,
+      card_stand: cards_stand,
       showDialog: showd,
       textChange: [],
       test1: require('../PM_Back.jpg'),
@@ -180,13 +190,16 @@ export default {
 
       console.log(this.source_used);
     },
+    removeRotate() {
+
+    },
 
     // drop
     isStackArea(placeName){
       if(placeName == "decks" || placeName == "discards" || placeName == "ex-decks" || placeName == "excludeds"){
-        return false;
-      } else {
         return true;
+      } else {
+        return false;
       }
     },
     dropArea(place){
@@ -205,7 +218,7 @@ export default {
       this.lastPlaceId = place.draggedContext.index;
       this.dragCard = place.draggedContext.element;
 
-      return this.isStackArea(place.to.getAttribute("id"));
+      return !this.isStackArea(place.to.getAttribute("id"));
     },
     dropTest(data) {
       this.drag = false;
@@ -218,62 +231,68 @@ export default {
       // check whether the card is at the same area
       // but its ghost changed the position before it drop
 
-      if(this.card_list[this.lastPlaceId] != this.dragCard || typeof this.card_list[this.lastPlaceId] == "undefined"){
+      console.log("place:" + place);
 
-        disable_first_drop = 0;
+      if(this.isStackArea(place)){
+        if(this.card_list[this.lastPlaceId] != this.dragCard || typeof this.card_list[this.lastPlaceId] == "undefined"){
 
-        // ghost probably lie in somewhere else
+          disable_first_drop = 0;
 
-        switch(data.to.getAttribute("id")){
-          case "hands":
-            this.$bus.$emit("cancel-hand-drop",data.newDraggableIndex);
-            this.$bus.$emit("add-to-deck-again",this.dragCard,data.to.getAttribute("area-name"));
-            break;
-          case "mains":
-            this.$bus.$emit("cancel-main-drop",data.newDraggableIndex);
-            this.$bus.$emit("add-to-deck-again",dropCard,data.to.getAttribute("area-name"));
-            break;
-          case "supports":
-            this.$bus.$emit("cancel-support-drop",data.newDraggableIndex);
-            this.$bus.$emit("add-to-deck-again",dropCard,data.to.getAttribute("area-name")); 
-            break;
-          case "points":
-            //this.$bus.$emit("cancel-point-drop",data.newDraggableIndex);
-            //this.$bus.$emit("add-to-deck-again",dropCard,data.to.getAttribute("area-name"));
+          // ghost probably lie in somewhere else
 
-            if(data.to === data.from && this.card_list[data.newDraggableIndex] === dropCard){
-              // implies that the dragged card only changes its position in the original area
-              
-              this.lastPlaceId = data.newDraggableIndex;
-              //this.$bus.$emit("add-to-deck-again",dropCard);
-              this.$bus.$emit("add-to-again",this.dragCard,place);
-              this.card_list.splice(this.lastPlaceId,1);
-              console.log("in change id");
-            }
-            break;
-          case "temp-area":
-            // special case: it will affect deck-stack area too
-            //this.$bus.$emit("cancel-temp-drop",data.newDraggableIndex);
+          switch(data.to.getAttribute("id")){
+            case "hands":
+              this.$bus.$emit("cancel-hand-drop",data.newDraggableIndex);
+              this.$bus.$emit("add-to-again",dropCard,place,data.to.getAttribute("area-name"));
+              console.log("jizz");
+              break;
+            case "mains":
+              this.$bus.$emit("cancel-main-drop",data.newDraggableIndex);
+              this.$bus.$emit("add-to-again",dropCard,place,data.to.getAttribute("area-name"));
+              break;
+            case "supports":
+              this.$bus.$emit("cancel-support-drop",data.newDraggableIndex);
+              this.$bus.$emit("add-to-again",dropCard.place,data.to.getAttribute("area-name")); 
+              break;
+            case "points":
+              //this.$bus.$emit("cancel-point-drop",data.newDraggableIndex);
+              //this.$bus.$emit("add-to-deck-again",dropCard,data.to.getAttribute("area-name"));
 
-            // args_1: where, args_2: index
-            this.$bus.$emit("cancel-stack-drop",data.to.getAttribute("area-name"),data.newDraggableIndex);
+              if(data.to === data.from && this.card_list[data.newDraggableIndex] === dropCard){
+                // implies that the dragged card only changes its position in the original area
+                
+                this.lastPlaceId = data.newDraggableIndex;
+                //this.$bus.$emit("add-to-deck-again",dropCard);
+                this.$bus.$emit("add-to-again",dropCard,place);
+                this.card_list.splice(this.lastPlaceId,1);
+                console.log("in change id");
+              }
+              break;
+            case "temp-area":
+              // special case: it will affect deck-stack area too
+              //this.$bus.$emit("cancel-temp-drop",data.newDraggableIndex);
 
-            // case when temp area is the same with stack
-            // since we use openTemp to refresh the list
-            // need to check whether the area-name is same with lastPlace
+              // args_1: where, args_2: index
+              this.$bus.$emit("cancel-stack-drop",data.to.getAttribute("area-name"),data.newDraggableIndex);
 
-            //this.$bus.$emit("add-to-deck-again",this.dragCard,data.to.getAttribute("area-name"));
+              // case when temp area is the same with stack
+              // since we use openTemp to refresh the list
+              // need to check whether the area-name is same with lastPlace
 
-            this.$bus.$emit("add-to-again",this.dragCard,place,data.to.getAttribute("area-name"));
+              //this.$bus.$emit("add-to-deck-again",this.dragCard,data.to.getAttribute("area-name"));
 
-            break;
+              this.$bus.$emit("add-to-again",dropCard,place,data.to.getAttribute("area-name"));
+
+              break;
+          }
+
+          console.log("point to deck error");
         }
 
-        console.log("point to deck error");
+        this.$bus.$emit("card-stack-to-deck-stack",dropCard,disable_first_drop,place,"point");
+        console.log("emit dropCard to " + place);
       }
-
-      this.$bus.$emit("card-stack-to-deck-stack",dropCard,disable_first_drop,place,"point");
-      console.log("emit dropCard to deck");
+      
 
     },
     drop(data) {
@@ -535,9 +554,11 @@ export default {
       };
     },
   },
-  mount() {
+  mounted() {
     this.$bus.$on("able-to-remove",(where) => {
+      console.log("where:" + where);
       if(where == "point"){
+        console.log("lastPlaceId: " + this.lastPlaceId);
         this.card_list.splice(this.lastPlaceId,1);
       }
     });

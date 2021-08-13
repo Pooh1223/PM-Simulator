@@ -17,7 +17,7 @@ html,body{
 	height: 940px;
 	background: darkred;
 	display: inline-block;
-	white-space: normal;
+	white-space: initial;
 }
 
 .oppo{
@@ -27,7 +27,7 @@ html,body{
 	height: 940px;
 	background: darkblue;
 	display: inline-block;
-	white-space: normal;
+	white-space: initial;
 }
 
 .upper-area {

@@ -133,7 +133,7 @@ export default {
 
     return {
       row_of_card: rowofcard,
-      card_list: tester.slice(0,8),
+      card_list: tester.slice(16,24),
       drag: false,
 
       modalData: tester[0],
