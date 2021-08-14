@@ -904,6 +904,9 @@ export default {
   //padding-left: 10px;
   box-sizing: border-box;
 }
+#main-detail {
+  white-space: normal;
+}
 
 .rotate {
   //background-image: url("../PM_Back_Side.jpg") 0 0 repeat;

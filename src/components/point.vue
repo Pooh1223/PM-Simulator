@@ -190,8 +190,17 @@ export default {
 
       console.log(this.source_used);
     },
-    removeRotate() {
+    removeRotate(data) {
+      console.log("point choose");
+      console.log(data.item);
 
+      let id = data.oldIndex;
+
+      //data.item.classList.remove("rotatem90");
+
+      this.card_stand = this.card_stand.map((el,i) => 
+        i === id ? !el : el
+      );
     },
 
     // drop
@@ -218,7 +227,18 @@ export default {
       this.lastPlaceId = place.draggedContext.index;
       this.dragCard = place.draggedContext.element;
 
-      return !this.isStackArea(place.to.getAttribute("id"));
+      if(this.isStackArea(place.to.getAttribute("id"))){
+        return false;
+      } else {
+        // move to card stack area , need to rotate back
+
+        //if(place.to.getAttribute("id") != "points"){
+        //  // move to other area, need to rotate
+        //  place.draggedContext.element.order
+        //}
+
+        return true;
+      }
     },
     dropTest(data) {
       this.drag = false;
@@ -614,6 +634,10 @@ export default {
 .point img {
   vertical-align: top;
   max-width: 100%;
+}
+
+#point-detail {
+  white-space: normal;
 }
 
 .rotatem90 {

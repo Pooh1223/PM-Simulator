@@ -893,6 +893,9 @@ export default {
   //padding-left: 10px;
   box-sizing: border-box;
 }
+#support-detail {
+  white-space: normal;
+}
 </style>
 
 <style src="vue-dialog-drag/dist/vue-dialog-drag.css"></style>

@@ -801,5 +801,7 @@ export default {
   max-width: 100%;
   opacity: 0;
 }
-
+#hand-detail {
+  white-space: normal;
+}
 </style>
