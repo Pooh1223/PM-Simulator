@@ -1,18 +1,16 @@
 <template>
-  <transition></transition>
+  <HelloWorld></HelloWorld>
 </template>
 
 <script>
-//import HelloWorld from "./components/HelloWorld.vue";
-import transition from "./components/transition.vue";
+import HelloWorld from "./components/HelloWorld.vue";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 export default {
   name: "App",
   components: {
-    //HelloWorld,
-    transition,
+    HelloWorld,
   },
 };
 </script>
