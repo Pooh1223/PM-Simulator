@@ -1,21 +1,77 @@
 <template>
 <div class="container vertical-scrollable">
+
+  <b-modal 
+    id="choose-detail"
+    scrollable
+    title="Card-Detail"
+    hide-backdrop
+    :data="modalData">
+    <div class="card-container">
+      <img :src="modalData === null ? '../PM_Back.jpg' : modalData.detail.img_url" />
+      <div class="card-attr">
+        <!--<b-table striped hover :items="modalData === null ? [] : addInArray(modalData.detail)"></b-table>-->
+
+        <table class="table table-striped">
+          <tbody>
+            <tr
+              v-for="(attr, index) in Object.entries(modalData.detail)"
+              :key="attr.card_number"
+              >
+              <th v-if="showTable(index)">{{attr[0]}}</th>
+              <td 
+                :class="textChange.includes(index) ? 'text-danger' : 'text-dark'"
+                v-if="showTable(index)"
+                >
+                {{attr[1]}}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </b-modal>
+
   <div class="row">
     <div
-      class="card col-4" 
-      
+      class="card col-4"
       v-for="element in card_list"
       :key="element.detail.card_number">
 
       <img
         :src="element.detail.img_url"
+        v-b-modal.choose-detail
         class="card-img-top"
         alt="error">
 
       <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-        <a href="#" class="btn btn-primary">Go somewhere</a>
+        <h6 class="card-title">{{element.detail.card_number}} {{element.detail.card_name}}</h6>
+        <p>
+          <strong> Source: {{element.detail.source}} </strong>
+          <br>
+          <strong> Cost: {{element.detail.cost}} </strong>
+          <br>
+          <strong v-if="notValue(element.detail.AP)"> AP: {{element.detail.AP}}</strong>
+          <br>
+          <strong v-if="notValue(element.detail.DP)"> DP: {{element.detail.DP}}</strong>
+        </p>
+        <p class="card-text">{{element.detail.type}}</p>
+        
+        <div class="btn-group">
+          <b-button
+            class="btn-line"
+            variant="outline-danger"
+            >
+            +
+          </b-button>
+          <b-button
+            class="btn-line"
+            variant="outline-danger"
+            >
+            -
+          </b-button>
+          <p>0/4</p>
+        </div>
       </div>
 
     </div>
@@ -47,8 +103,19 @@ export default {
       card_list: tester,
       drag: false,
       modalData: tester[0],
-      
+      textChange: [],
     };
+  },
+  methods: {
+    notValue(data) {
+      return !isNaN(parseInt(data));
+    },
+    addInArray(data) {
+      return [data];
+    },
+    showTable(id) {
+      return (id != 0);
+    },
   }
 };
 </script>
