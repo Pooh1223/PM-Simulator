@@ -1,5 +1,6 @@
 import Vue from "vue";
 import CardColumn from "./components/CardColumn.vue";
+import CardFilter from "./components/CardFilter.vue";
 //import App from "./App.vue";
 //import transition from "./components/transition.vue";
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
@@ -13,4 +14,8 @@ Vue.use(IconsPlugin);
 
 new Vue({
   render: (h) => h(CardColumn),
-}).$mount("#app");
+}).$mount(".card-display > #app");
+
+new Vue({
+  render: (h) => h(CardFilter),
+}).$mount(".card-select > #app");

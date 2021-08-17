@@ -40,12 +40,14 @@
 
       <img
         :src="element.detail.img_url"
+        title="Click to check out detail"
         v-b-modal.choose-detail
         class="card-img-top"
         alt="error">
 
-      <div class="card-body">
+      <div class="card-body d-flex flex-column">
         <h6 class="card-title">{{element.detail.card_number}} {{element.detail.card_name}}</h6>
+        <p class="card-text">{{element.detail.type}}</p>
         <p>
           <strong> Source: {{element.detail.source}} </strong>
           <br>
@@ -55,9 +57,8 @@
           <br>
           <strong v-if="notValue(element.detail.DP)"> DP: {{element.detail.DP}}</strong>
         </p>
-        <p class="card-text">{{element.detail.type}}</p>
         
-        <div class="btn-group">
+        <div class="btn-group mt-auto">
           <b-button
             class="btn-line"
             variant="outline-danger"
@@ -70,7 +71,7 @@
             >
             -
           </b-button>
-          <p>0/4</p>
+          <p class="my-auto float-right">&nbsp;&nbsp;0/4</p>
         </div>
       </div>
 
