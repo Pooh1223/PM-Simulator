@@ -43,6 +43,7 @@
         title="Click to check out detail"
         v-b-modal.choose-detail
         class="card-img-top"
+        @click="modalData = element"
         alt="error">
 
       <div class="card-body d-flex flex-column">
