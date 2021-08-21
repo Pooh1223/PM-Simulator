@@ -20,7 +20,7 @@
               >
               <th v-if="showTable(index)">{{attr[0]}}</th>
               <td 
-                :class="textChange.includes(index) ? 'text-danger' : 'text-dark'"
+                class="text-dark"
                 v-if="showTable(index)"
                 >
                 {{attr[1]}}
@@ -35,7 +35,7 @@
   <div class="row">
     <div
       class="card col-4"
-      v-for="element in card_list"
+      v-for="(element, index) in card_list"
       :key="element.detail.card_number">
 
       <img
@@ -63,16 +63,18 @@
           <b-button
             class="btn-line"
             variant="outline-danger"
+            @click="addCard(index)"
             >
             +
           </b-button>
           <b-button
             class="btn-line"
             variant="outline-danger"
+            @click="removeCard(index)"
             >
             -
           </b-button>
-          <p class="my-auto float-right">&nbsp;&nbsp;0/4</p>
+          <p class="my-auto float-right">&nbsp;&nbsp;{{card_count[index]}}/4</p>
         </div>
       </div>
 
@@ -94,18 +96,23 @@ export default {
   },
   data() {
     const mydata = require("../../board/data.json");
-    //console.log(mydata);
+    
     const tester = mydata.map((detail, index) => {
       return {detail, order: index + 1, excost: 0, exsource: 0, exap: 0, exdp: 0, overlap: []};
     });
     console.log(tester);
-    //console.log(tester.slice(0,1));
+    
+    const counter = [];
+
+    for(let i = 0;i < tester.length;++i){
+      counter.push(0);
+    }
 
     return {
       card_list: tester,
       drag: false,
       modalData: tester[0],
-      textChange: [],
+      card_count: counter,
     };
   },
   methods: {
@@ -117,6 +124,24 @@ export default {
     },
     showTable(id) {
       return (id != 0);
+    },
+    addCard(id) {
+      let pre_count = this.card_count[id];
+
+      if(pre_count != 4){
+        this.card_count.splice(id,1,pre_count + 1);
+        this.$bus.$emit("add-to-deck",this.card_list[id],this.card_count[id]);
+        console.log("emit add card");
+      }
+    },
+    removeCard(id) {
+      let pre_count = this.card_count[id];
+
+      if(pre_count != 0){
+        this.card_count.splice(id,1,pre_count - 1);
+        this.$bus.$emit("remove-from-deck",this.card_list[id],this.card_count[id]);
+        console.log("emit remove card");
+      }
     },
   }
 };

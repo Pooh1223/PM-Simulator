@@ -17,6 +17,28 @@
         </b-form-group>
 
         <b-form-group
+          id="input-group-card-number"
+          label="Card Number"
+          label-for="input-card-number"
+        >
+          <b-form-checkbox-group
+            v-model="form.card_prefix"
+            id="checkbox-card-prefix"
+          >
+            <b-form-checkbox value="P">P</b-form-checkbox>
+            <b-form-checkbox value="ST">ST</b-form-checkbox>
+          </b-form-checkbox-group>
+
+          <b-form-input
+            id="input-card-number"
+            v-model="form.number"
+            type="number"
+            placeholder="Enter card number"
+            required
+          ></b-form-input>
+        </b-form-group>
+
+        <b-form-group
           id="input-group-name"
           label="Card Name"
           label-for="input-name"
@@ -127,7 +149,7 @@
 
         <b-form-group id="input-group-4" label="Color" v-slot="{ ariaDescribedby }">
           <b-form-checkbox-group
-            v-model="form.checked"
+            v-model="form.color"
             id="checkboxes-4"
             :aria-describedby="ariaDescribedby"
           >
@@ -173,6 +195,7 @@
                 >
 
                 <img
+                  v-if="element.detail.effect.includes('EXカード') == false"
                   :src="element.detail.img_url"
                   title="Click to check out detail"
                   class="deck-img-tb"
@@ -195,6 +218,7 @@
                 >
 
                 <img
+                  v-if="element.detail.effect.includes('EXカード') == true"
                   :src="element.detail.img_url"
                   title="Click to check out detail"
                   class="deck-img-tb"
@@ -245,6 +269,8 @@ export default {
       form: {
         series: null,
         name: '',
+        number: '',
+        card_prefix: [],
         source: '',
         cost: '',
         ap_min: '',
@@ -252,13 +278,14 @@ export default {
         dp_min: '',
         dp_max: '',
         type: null,
-        checked: []
+        color: []
       },
       types: [{ text: 'Select One', value: null }, 'Character', 'Support', 'Event'],
       series: [{ text: 'Select One', value: null }, 'jizz'],
       show: true,
 
-      card_chosen: [tester[0],tester[1],tester[2],tester[3],tester[4],tester[5]],
+      //tester[0],tester[1],tester[2],tester[3],tester[4],tester[5]
+      card_chosen: [],
     };
   },
   methods: {
@@ -278,14 +305,40 @@ export default {
       this.form.dp_min = '';
       this.form.dp_max = '';
       this.form.type = null;
-      this.form.checked = [];
+      this.form.color = [];
 
       // Trick to reset/clear native browser form validation state
-      this.show = false
+      this.show = false;
       this.$nextTick(() => {
-        this.show = true
+        this.show = true;
       })
     },
+  },
+  mounted() {
+    this.$bus.$on("add-to-deck",(card,cnt) => {
+      if(cnt == 1){
+        // new card just added
+
+        this.card_chosen.push(card);
+        console.log("added");
+      }
+    });
+
+    this.$bus.$on("remove-from-deck",(card,cnt) => {
+
+      if(cnt == 0){
+        for(let i = 0;i < this.card_chosen.length;++i){
+          if(card.detail.card_number == this.card_chosen[i].detail.card_number &&
+            card.detail.lines == this.card_chosen[i].detail.lines){
+              this.card_chosen.splice(i,1);
+              console.log("deleted");
+              break;
+            }
+        }
+        console.log(this.card_chosen);
+      }
+      
+    });
   }
 };
 </script>
