@@ -1,5 +1,60 @@
 <template>
   <div class="container card_filter">
+
+    <b-modal 
+      id="deck-detail"
+      scrollable
+      title="Deck-Detail"
+      size="xl"
+      >
+      <div class="row">
+        <div
+          id="chart"
+          class="col-6">
+          <apexcharts
+            type="bar"
+            height="350"
+            :options="chartOptions"
+            :series="chart_series">
+          </apexcharts>
+        </div>
+
+        <div class="col-6">
+          <b-table
+            :items="items"
+            :fields="fields"
+            responsive="sm"
+          >
+            <template slot="thead-top">
+              <b-tr>
+                <b-th colspan="1"><span class="sr-only">Name and ID</span></b-th>
+                <b-th variant="primary" colspan="3">Main-deck</b-th>
+                <b-th variant="danger" colspan="3">Ex-deck</b-th>
+              </b-tr>
+            </template>
+          </b-table>
+        </div>
+      </div>
+
+      <div class="row">
+        <div
+          class="card col-2"
+          v-for="element in card_chosen.concat(ex_card_chosen)"
+          :key="element.detail.card_number">
+
+          <img
+            :src="element.detail.img_url"
+            title="Click to check out detail"
+            v-b-modal.choose-detail
+            class="card-img-top"
+            @click="modalData = element"
+            alt="error" />
+
+          <div class="card-footer bg-transparent">Footer</div>
+        </div>
+      </div>
+    </b-modal>
+
     <div>
       <b-form @submit="onSubmit" @reset="onReset" v-if="show">
 
@@ -182,7 +237,7 @@
 
         <!--<pre class="m-0">{{ form }}</pre>-->
 
-        <b-list-group>
+        <b-list-group v-b-modal.deck-detail>
           <b-list-group-item>
             <h5> Main Deck: </h5>
 
@@ -195,7 +250,7 @@
                 >
 
                 <img
-                  v-if="element.detail.effect.includes('EXカード') == false"
+                  
                   :src="element.detail.img_url"
                   title="Click to check out detail"
                   class="deck-img-tb"
@@ -212,13 +267,13 @@
             <div class="row">
               <div
                 class="col-2"
-                v-for="element in card_chosen"
+                v-for="element in ex_card_chosen"
                 :key="element.detail.card_number"
                 style="padding-left: 0px; padding-right: 0px;"
                 >
 
                 <img
-                  v-if="element.detail.effect.includes('EXカード') == true"
+                  
                   :src="element.detail.img_url"
                   title="Click to check out detail"
                   class="deck-img-tb"
@@ -247,6 +302,8 @@
 </template>
 
 <script>
+//import ApexCharts from 'apexcharts'
+import VueApexCharts from "vue-apexcharts";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
@@ -254,7 +311,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 export default {
   name: "CardFilter",
   components: {
-    
+    apexcharts: VueApexCharts,
   },
   data() {
     const mydata = require("../../board/data.json");
@@ -286,6 +343,57 @@ export default {
 
       //tester[0],tester[1],tester[2],tester[3],tester[4],tester[5]
       card_chosen: [],
+      ex_card_chosen: [],
+
+      // charts
+
+      chart_series: [{
+        data: [21, 22, 10, 28]
+      }],
+      chartOptions: {
+        chart: {
+          id: "basic-bar",
+          height: 350,
+          type: 'bar',
+        },
+        dataLabels: {
+          enabled: false
+        },
+        plotOptions: {
+          bar: {
+            distributed: true
+          }
+        },
+        colors: ["#FC2E02","#FCE502","#02FC3B","#029AFC"],
+        xaxis: {
+          categories: [
+            'a','b','c','d'
+          ],
+          labels: {
+            style: {
+              colors: '#000000',
+              fontSize: '12px'
+            }
+          }
+        }
+      },
+
+      // table
+      fields: [
+        'type',
+        {key: 'source.main', label: 'Source'},
+        {key: 'cost.main', label: 'Cost'},
+        {key: 'cards.main', label: 'Cards'},
+        {key: 'source.ex', label: 'Source'},
+        {key: 'cost.ex', label: 'Cost'},
+        {key: 'cards.ex', label: 'Cards'},
+      ],
+      items: [
+        { type: 'Character', source: { main: 0,ex: 0} , cost: { main: 0, ex: 0}, cards: { main: 0, ex: 0} },
+        { type: 'Support', source: { main: 0,ex: 0} , cost: { main: 0, ex: 0}, cards: { main: 0, ex: 0} },
+        { type: 'Event', source: { main: 0,ex: 0} , cost: { main: 0, ex: 0}, cards: { main: 0, ex: 0} },
+        { type: 'Total', source: { main: 0,ex: 0} , cost: { main: 0, ex: 0}, cards: { main: 0, ex: 0} }
+      ]
     };
   },
   methods: {
@@ -313,13 +421,21 @@ export default {
         this.show = true;
       })
     },
+    showTable(id) {
+      return (id != 0);
+    },
   },
   mounted() {
     this.$bus.$on("add-to-deck",(card,cnt) => {
       if(cnt == 1){
         // new card just added
 
-        this.card_chosen.push(card);
+        if(card.detail.effect.includes("EXカード")){
+          this.ex_card_chosen.push(card);
+        } else {
+          this.card_chosen.push(card);
+        }
+
         console.log("added");
       }
     });
@@ -327,17 +443,28 @@ export default {
     this.$bus.$on("remove-from-deck",(card,cnt) => {
 
       if(cnt == 0){
-        for(let i = 0;i < this.card_chosen.length;++i){
-          if(card.detail.card_number == this.card_chosen[i].detail.card_number &&
-            card.detail.lines == this.card_chosen[i].detail.lines){
-              this.card_chosen.splice(i,1);
-              console.log("deleted");
-              break;
-            }
+        if(card.detail.effect.includes("EXカード")){
+          for(let i = 0;i < this.ex_card_chosen.length;++i){
+            if(card.detail.card_number == this.ex_card_chosen[i].detail.card_number &&
+              card.detail.lines == this.ex_card_chosen[i].detail.lines){
+                this.ex_card_chosen.splice(i,1);
+                console.log("deleted");
+                break;
+              }
+          }
+        } else {
+          for(let i = 0;i < this.card_chosen.length;++i){
+            if(card.detail.card_number == this.card_chosen[i].detail.card_number &&
+              card.detail.lines == this.card_chosen[i].detail.lines){
+                this.card_chosen.splice(i,1);
+                console.log("deleted");
+                break;
+              }
+          }
         }
+          
         console.log(this.card_chosen);
       }
-      
     });
   }
 };

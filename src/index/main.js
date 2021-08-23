@@ -6,6 +6,7 @@ import CardFilter from "./components/CardFilter.vue";
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
+import VueApexCharts from "vue-apexcharts";
 
 // 安裝 BootstrapVue
 Vue.use(BootstrapVue);
@@ -16,6 +17,9 @@ Vue.config.productionTip = false;
 
 // use event bus
 Vue.prototype.$bus = new Vue();
+
+// use apexchart
+Vue.use(VueApexCharts);
 
 new Vue({
   render: (h) => h(CardColumn),
