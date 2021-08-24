@@ -5,7 +5,6 @@
     id="choose-detail"
     scrollable
     title="Card-Detail"
-    hide-backdrop
     :data="modalData">
     <div class="card-container">
       <img :src="modalData === null ? '../PM_Back.jpg' : modalData.detail.img_url" />
@@ -74,7 +73,7 @@
             >
             -
           </b-button>
-          <p class="my-auto float-right">&nbsp;&nbsp;{{card_count[index]}}/4</p>
+          <p class="my-auto float-right">&nbsp;&nbsp;{{element.cnt}}/4</p>
         </div>
       </div>
 
@@ -98,21 +97,21 @@ export default {
     const mydata = require("../../board/data.json");
     
     const tester = mydata.map((detail, index) => {
-      return {detail, order: index + 1, excost: 0, exsource: 0, exap: 0, exdp: 0, overlap: []};
+      return {detail, order: index + 1, excost: 0, exsource: 0, exap: 0, exdp: 0, overlap: [], cnt: 0};
     });
     console.log(tester);
     
-    const counter = [];
+    //const counter = [];
 
-    for(let i = 0;i < tester.length;++i){
-      counter.push(0);
-    }
+    //for(let i = 0;i < tester.length;++i){
+    //  counter.push(0);
+    //}
 
     return {
       card_list: tester,
       drag: false,
       modalData: tester[0],
-      card_count: counter,
+      //card_count: counter,
     };
   },
   methods: {
@@ -126,20 +125,22 @@ export default {
       return (id != 0);
     },
     addCard(id) {
-      let pre_count = this.card_count[id];
+      //let pre_count = this.card_count[id];
 
-      if(pre_count != 4){
-        this.card_count.splice(id,1,pre_count + 1);
-        this.$bus.$emit("add-to-deck",this.card_list[id],this.card_count[id]);
+      if(this.card_list[id].cnt != 4){
+        this.card_list[id].cnt += 1;
+        //this.card_count.splice(id,1,this.card_list[id].cnt);
+        this.$bus.$emit("add-to-deck",this.card_list[id]);
         console.log("emit add card");
       }
     },
     removeCard(id) {
-      let pre_count = this.card_count[id];
+      //let pre_count = this.card_count[id];
 
-      if(pre_count != 0){
-        this.card_count.splice(id,1,pre_count - 1);
-        this.$bus.$emit("remove-from-deck",this.card_list[id],this.card_count[id]);
+      if(this.card_list[id].cnt != 0){
+        this.card_list[id].cnt -= 1;
+        //this.card_count.splice(id,1,this.card_list.cnt);
+        this.$bus.$emit("remove-from-deck",this.card_list[id]);
         console.log("emit remove card");
       }
     },

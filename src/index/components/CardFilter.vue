@@ -6,6 +6,7 @@
       scrollable
       title="Deck-Detail"
       size="xl"
+      ok-only
       >
       <div class="row">
         <div
@@ -45,12 +46,62 @@
           <img
             :src="element.detail.img_url"
             title="Click to check out detail"
-            v-b-modal.choose-detail
             class="card-img-top"
-            @click="modalData = element"
             alt="error" />
 
-          <div class="card-footer bg-transparent">Footer</div>
+          <div class="card-footer bg-transparent row">
+            <div
+              class="col-6"
+              style="display: inline-block;"
+              >
+
+              <b-button
+                type="submit"
+                variant="primary"
+                v-b-modal.deck-card-detail
+                @click="deckCardDetail = element"
+                >
+                Detail
+              </b-button>
+            </div>
+            <div 
+              class="col-6 mt-auto"
+              style="display: inline-block;"
+              >
+              <h5 class="text-right">{{element.cnt}}/4</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </b-modal>
+
+    <b-modal 
+      id="deck-card-detail"
+      scrollable
+      title="Deck-Detail"
+      ok-only
+      :data="deckCardDetail"
+      >
+      <div class="card-container">
+        <img :src="deckCardDetail === null ? '../PM_Back.jpg' : deckCardDetail.detail.img_url" />
+        <div class="card-attr">
+
+          <table class="table table-striped">
+            <tbody>
+              <tr
+                v-for="(attr, index) in Object.entries(deckCardDetail.detail)"
+                :key="attr.card_number"
+                >
+                <th v-if="showTable(index)">{{attr[0]}}</th>
+                <td 
+                  class="text-dark"
+                  v-if="showTable(index)"
+                  >
+                  {{attr[1]}}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </b-modal>
@@ -273,7 +324,6 @@
                 >
 
                 <img
-                  
                   :src="element.detail.img_url"
                   title="Click to check out detail"
                   class="deck-img-tb"
@@ -317,12 +367,13 @@ export default {
     const mydata = require("../../board/data.json");
     //console.log(mydata);
     const tester = mydata.map((detail, index) => {
-      return {detail, order: index + 1, excost: 0, exsource: 0, exap: 0, exdp: 0, overlap: []};
+      return {detail, order: index + 1, excost: 0, exsource: 0, exap: 0, exdp: 0, overlap: [],cnt: 0};
     });
     console.log(tester);
     //console.log(tester.slice(0,1));
 
     return {
+      deckCardDetail: tester[0],
       form: {
         series: null,
         name: '',
@@ -348,7 +399,7 @@ export default {
       // charts
 
       chart_series: [{
-        data: [21, 22, 10, 28]
+        data: [0, 0, 0, 0]
       }],
       chartOptions: {
         chart: {
@@ -367,7 +418,7 @@ export default {
         colors: ["#FC2E02","#FCE502","#02FC3B","#029AFC"],
         xaxis: {
           categories: [
-            'a','b','c','d'
+            '紅','黃','綠','藍'
           ],
           labels: {
             style: {
@@ -424,10 +475,30 @@ export default {
     showTable(id) {
       return (id != 0);
     },
+    colorToIndex(color) {
+      let id = -1;
+
+      switch(color){
+        case '赤':
+          id = 0;
+          break;
+        case '黄':
+          id = 1;
+          break;
+        case '緑':
+          id = 2;
+          break;
+        case '青':
+          id = 3;
+          break;
+      }
+
+      return id;
+    },
   },
   mounted() {
-    this.$bus.$on("add-to-deck",(card,cnt) => {
-      if(cnt == 1){
+    this.$bus.$on("add-to-deck",(card) => {
+      if(card.cnt == 1){
         // new card just added
 
         if(card.detail.effect.includes("EXカード")){
@@ -436,13 +507,18 @@ export default {
           this.card_chosen.push(card);
         }
 
+        console.log(card);
         console.log("added");
       }
+
+      // add color column
+      let colorId = this.colorToIndex(card.detail.color);
+      this.chart_series[0].data[colorId]++;
     });
 
-    this.$bus.$on("remove-from-deck",(card,cnt) => {
+    this.$bus.$on("remove-from-deck",(card) => {
 
-      if(cnt == 0){
+      if(card.cnt == 0){
         if(card.detail.effect.includes("EXカード")){
           for(let i = 0;i < this.ex_card_chosen.length;++i){
             if(card.detail.card_number == this.ex_card_chosen[i].detail.card_number &&
@@ -465,6 +541,10 @@ export default {
           
         console.log(this.card_chosen);
       }
+
+      // remove color column
+      let colorId = this.colorToIndex(card.detail.color);
+      this.chart_series[0].data[colorId]--;
     });
   }
 };
