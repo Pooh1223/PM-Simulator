@@ -432,18 +432,18 @@ export default {
       // table
       fields: [
         'type',
-        {key: 'source.main', label: 'Source'},
         {key: 'cost.main', label: 'Cost'},
+        {key: 'source.main', label: 'Source'},
         {key: 'cards.main', label: 'Cards'},
-        {key: 'source.ex', label: 'Source'},
         {key: 'cost.ex', label: 'Cost'},
+        {key: 'source.ex', label: 'Source'},
         {key: 'cards.ex', label: 'Cards'},
       ],
       items: [
-        { type: 'Character', source: { main: 0,ex: 0} , cost: { main: 0, ex: 0}, cards: { main: 0, ex: 0} },
+        { type: 'Character', source: { main: 0,ex: 0} , cost: { main: 0, ex: 0}, cards: { main: 0, ex: 0}},
         { type: 'Support', source: { main: 0,ex: 0} , cost: { main: 0, ex: 0}, cards: { main: 0, ex: 0} },
         { type: 'Event', source: { main: 0,ex: 0} , cost: { main: 0, ex: 0}, cards: { main: 0, ex: 0} },
-        { type: 'Total', source: { main: 0,ex: 0} , cost: { main: 0, ex: 0}, cards: { main: 0, ex: 0} }
+        { type: 'Total', source: { main: 0,ex: 0} , cost: { main: 0, ex: 0}, cards: { main: 0, ex: 0} , _rowVariant: 'warning'}
       ]
     };
   },
@@ -495,6 +495,23 @@ export default {
 
       return id;
     },
+    cardTypeConvert(type) {
+      let typeId = -1;
+
+      switch(type){
+        case 'キャラクター':
+          typeId = 0;
+          break;
+        case 'サポート':
+          typeId = 1;
+          break;
+        case 'イベント':
+          typeId = 2;
+          break;
+      }
+
+      return typeId;
+    }
   },
   mounted() {
     this.$bus.$on("add-to-deck",(card) => {
@@ -511,9 +528,32 @@ export default {
         console.log("added");
       }
 
-      // add color column
+      // update color column
       let colorId = this.colorToIndex(card.detail.color);
       this.chart_series[0].data[colorId]++;
+
+      // update modal table
+      let typeId = this.cardTypeConvert(card.detail.type);
+
+      if(card.detail.effect.includes("EXカード")){
+        // ex cards
+        this.items[typeId].source.ex += parseInt(card.detail.source);
+        this.items[typeId].cost.ex += parseInt(card.detail.cost);
+        this.items[typeId].cards.ex += 1;
+
+        this.items[3].source.ex += parseInt(card.detail.source);
+        this.items[3].cost.ex += parseInt(card.detail.cost);
+        this.items[3].cards.ex += 1;
+      } else {
+        // normal cards
+        this.items[typeId].source.main += parseInt(card.detail.source);
+        this.items[typeId].cost.main += parseInt(card.detail.cost);
+        this.items[typeId].cards.main += 1;
+
+        this.items[3].source.main += parseInt(card.detail.source);
+        this.items[3].cost.main += parseInt(card.detail.cost);
+        this.items[3].cards.main += 1;
+      }
     });
 
     this.$bus.$on("remove-from-deck",(card) => {
@@ -542,7 +582,7 @@ export default {
         console.log(this.card_chosen);
       }
 
-      // remove color column
+      // update color column
       let colorId = this.colorToIndex(card.detail.color);
       this.chart_series[0].data[colorId]--;
     });
