@@ -34,6 +34,24 @@
               </b-tr>
             </template>
           </b-table>
+
+          <div class="row">
+            <div
+              class="col-7 text-danger"
+              style="border: 1px #FF2D2D solid">
+              JIZZ
+            </div>
+
+            <div class="col-1"></div>
+
+            <b-button
+              class="col-4"
+              type="submit"
+              variant="primary"
+              >
+              Download Deck
+            </b-button>
+          </div>
         </div>
       </div>
 
@@ -51,8 +69,8 @@
 
           <div class="card-footer bg-transparent row">
             <div
-              class="col-6"
-              style="display: inline-block;"
+              class="btn-group"
+              style="padding-left: 0px; padding-right: 0px;"
               >
 
               <b-button
@@ -60,15 +78,30 @@
                 variant="primary"
                 v-b-modal.deck-card-detail
                 @click="deckCardDetail = element"
+                
                 >
                 Detail
               </b-button>
+              <b-button
+                class="btn-line"
+                variant="outline-danger"
+                
+                >
+                +
+              </b-button>
+              <b-button
+                class="btn-line"
+                variant="outline-danger"
+                
+                >
+                -
+              </b-button>
             </div>
-            <div 
-              class="col-6 mt-auto"
-              style="display: inline-block;"
+            <div
+              class="mt-auto"
+              style="padding-top: 10px;"
               >
-              <h5 class="text-right">{{element.cnt}}/4</h5>
+              <h5 class="text-center">{{element.cnt}}/4</h5>
             </div>
           </div>
         </div>
