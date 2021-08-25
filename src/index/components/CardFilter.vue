@@ -13,6 +13,7 @@
           id="chart"
           class="col-6">
           <apexcharts
+            ref="realtimeChart"
             type="bar"
             height="350"
             :options="chartOptions"
@@ -58,7 +59,7 @@
       <div class="row">
         <div
           class="card col-2"
-          v-for="element in card_chosen.concat(ex_card_chosen)"
+          v-for="(element, index) in card_chosen.concat(ex_card_chosen)"
           :key="element.detail.card_number">
 
           <img
@@ -68,6 +69,11 @@
             alt="error" />
 
           <div class="card-footer bg-transparent row">
+
+            <div class="mt-auto">
+              <h5 class="text-center">{{element.cnt}}/4</h5>
+            </div>
+
             <div
               class="btn-group"
               style="padding-left: 0px; padding-right: 0px;"
@@ -78,31 +84,25 @@
                 variant="primary"
                 v-b-modal.deck-card-detail
                 @click="deckCardDetail = element"
-                
                 >
                 Detail
               </b-button>
               <b-button
                 class="btn-line"
                 variant="outline-danger"
-                
+                @click="addCard(index)"
                 >
                 +
               </b-button>
               <b-button
                 class="btn-line"
                 variant="outline-danger"
-                
+                @click="removeCard(index)"
                 >
                 -
               </b-button>
             </div>
-            <div
-              class="mt-auto"
-              style="padding-top: 10px;"
-              >
-              <h5 class="text-center">{{element.cnt}}/4</h5>
-            </div>
+            
           </div>
         </div>
       </div>
@@ -459,6 +459,13 @@ export default {
               fontSize: '12px'
             }
           }
+        },
+        yaxis: {
+          labels: {
+            formatter: function(val) {
+              return val.toFixed(0);
+            }
+          }
         }
       },
 
@@ -544,7 +551,58 @@ export default {
       }
 
       return typeId;
-    }
+    },
+
+    // update card
+    addCard(id) {
+      if(id < this.card_chosen.length){
+        // belongs to main card
+
+        let tmp_card = this.card_chosen[id];
+        if(tmp_card.cnt != 4){
+          tmp_card.cnt += 1;
+          this.$bus.$emit("add-to-deck",tmp_card);
+          this.updateSeriesLine();
+        }        
+      } else {
+        // belongs to ex card
+
+        let tmp_card = this.ex_card_chosen[id - this.card_chosen.length];
+        if(tmp_card.cnt != 4){
+          tmp_card.cnt += 1;
+          this.$bus.$emit("add-to-deck",tmp_card);
+          this.updateSeriesLine();
+        }   
+      }
+    },
+    removeCard(id) {
+      if(id < this.card_chosen.length){
+        // belongs to main card
+
+        let tmp_card = this.card_chosen[id];
+
+        if(tmp_card.cnt != 0){
+          tmp_card.cnt -= 1;
+          this.$bus.$emit("remove-from-deck",tmp_card);
+          this.updateSeriesLine();
+        }  
+      } else {
+        // belongs to ex card
+
+        let tmp_card = this.ex_card_chosen[id - this.card_chosen.length];
+        if(tmp_card.cnt != 0){
+          tmp_card.cnt -= 1;
+          this.$bus.$emit("remove-from-deck",tmp_card);
+          this.updateSeriesLine();
+        }
+      }
+    },
+    // used for update color column
+    updateSeriesLine() {
+      this.$refs.realtimeChart.updateSeries([{
+        data: this.chart_series[0].data,
+      }], false, true);
+    },
   },
   mounted() {
     this.$bus.$on("add-to-deck",(card) => {
