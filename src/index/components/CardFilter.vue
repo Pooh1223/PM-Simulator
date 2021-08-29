@@ -36,19 +36,21 @@
             </template>
           </b-table>
 
-          <div class="row">
+          <div class="row" style="padding-left: 10px; padding-right: 10px;">
             <div
-              class="col-7 text-danger"
-              style="border: 1px #FF2D2D solid">
-              JIZZ
+              class="col-7 text-danger not-deck-warning">
+              <p style="margin-bottom: 0px;">JIZZ</p>
+              <p style="margin-bottom: 0px;">JIZZ</p>
+              <p style="margin-bottom: 0px;">JIZZ</p>
             </div>
 
-            <div class="col-1"></div>
+            <!--<div class="col-1"></div>-->
 
             <b-button
-              class="col-4"
+              class="col-5"
               type="submit"
               variant="primary"
+              @click="deckToJson"
               >
               Download Deck
             </b-button>
@@ -389,7 +391,7 @@
 import VueApexCharts from "vue-apexcharts";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
-
+import download from "downloadjs";
 
 export default {
   name: "CardFilter",
@@ -603,6 +605,14 @@ export default {
         data: this.chart_series[0].data,
       }], false, true);
     },
+
+    // convert deck to json file
+    deckToJson() {
+      let deck_dict = {'main': this.card_chosen, 'ex': this.ex_card_chosen};
+      const deck_json = JSON.stringify(deck_dict);
+      download(deck_json,"deck","application/json");
+      console.log(JSON.parse(deck_json));
+    },
   },
   mounted() {
     this.$bus.$on("add-to-deck",(card) => {
@@ -676,6 +686,29 @@ export default {
       // update color column
       let colorId = this.colorToIndex(card.detail.color);
       this.chart_series[0].data[colorId]--;
+
+      // update modal table
+      let typeId = this.cardTypeConvert(card.detail.type);
+
+      if(card.detail.effect.includes("EXカード")){
+        // ex cards
+        this.items[typeId].source.ex -= parseInt(card.detail.source);
+        this.items[typeId].cost.ex -= parseInt(card.detail.cost);
+        this.items[typeId].cards.ex -= 1;
+
+        this.items[3].source.ex -= parseInt(card.detail.source);
+        this.items[3].cost.ex -= parseInt(card.detail.cost);
+        this.items[3].cards.ex -= 1;
+      } else {
+        // normal cards
+        this.items[typeId].source.main -= parseInt(card.detail.source);
+        this.items[typeId].cost.main -= parseInt(card.detail.cost);
+        this.items[typeId].cards.main -= 1;
+
+        this.items[3].source.main -= parseInt(card.detail.source);
+        this.items[3].cost.main -= parseInt(card.detail.cost);
+        this.items[3].cards.main -= 1;
+      }
     });
   }
 };
@@ -689,5 +722,8 @@ export default {
 }
 .deck-img-tb {
   width: 100%;
+}
+.not-deck-warning {
+  border: 1px #FF2D2D solid;
 }
 </style>
