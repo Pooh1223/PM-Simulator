@@ -141,6 +141,75 @@
       </div>
     </b-modal>
 
+    <b-modal 
+      id="upload-deck"
+      scrollable
+      title="Upload your deck.json file"
+      >
+        <div>
+          <b-form-file
+            v-model="upload_deck"
+            :state="Boolean(upload_deck)"
+            placeholder="Choose a file or drop it here..."
+            drop-placeholder="Drop file here..."
+            id="selected"
+          ></b-form-file>
+          <b-button @click="print">Import</b-button>
+        </div>
+
+        <div>
+          <b-list-group>
+            <b-list-group-item>
+              <h5> Main Deck: </h5>
+
+              <div class="row">
+                <template v-for="element in upload_main">
+                  <div
+                    class="col-2"
+                    v-for="card in element.cnt"
+                    :key="element.detail.card_number + card"
+                    style="padding-left: 0px; padding-right: 0px;"
+                    >
+
+                    <img
+                      :src="element.detail.img_url"
+                      title="Click to check out detail"
+                      class="deck-img-tb"
+                      alt="error">
+
+                  </div>
+                </template>
+              </div>
+
+            </b-list-group-item>
+
+            <b-list-group-item>
+              <h5> Ex-Deck: </h5>
+
+              <div class="row">
+                <template v-for="element in upload_ex">
+                  <div
+                    class="col-2"
+                    v-for="card in element.cnt"
+                    :key="element.detail.card_number + card"
+                    style="padding-left: 0px; padding-right: 0px;"
+                    >
+
+                    <img
+                      :src="element.detail.img_url"
+                      title="Click to check out detail"
+                      class="deck-img-tb"
+                      alt="error">
+
+                  </div>
+                </template>
+              </div>
+            </b-list-group-item>
+          </b-list-group>
+        </div>
+
+    </b-modal>
+
     <div>
       <b-form @submit="onSubmit" @reset="onReset" v-if="show">
 
@@ -321,8 +390,6 @@
         header="Your Deck"
         >
 
-        <!--<pre class="m-0">{{ form }}</pre>-->
-
         <b-list-group v-b-modal.deck-detail>
           <b-list-group-item>
             <h5> Main Deck: </h5>
@@ -372,8 +439,9 @@
         <b-button
           type="submit"
           variant="primary"
+          v-b-modal.upload-deck
           >
-          Submit
+          Upload
         </b-button>
         <b-button
           type="reset"
@@ -428,8 +496,12 @@ export default {
       show: true,
 
       //tester[0],tester[1],tester[2],tester[3],tester[4],tester[5]
+      
       card_chosen: [],
       ex_card_chosen: [],
+      upload_deck: null,
+      upload_main: [],
+      upload_ex: [],
 
       // charts
 
@@ -490,6 +562,27 @@ export default {
     };
   },
   methods: {
+    print(data) {
+      const files = document.getElementById('selected').files;
+      if (files.length <= 0) {
+        return false;
+      }
+
+      const fr = new FileReader();
+
+      fr.onload = e => {
+        const result = JSON.parse(e.target.result);
+        //formatted = JSON.stringify(result, null, 2);
+
+        //console.log(result.main);
+        this.upload_main = result.main;
+        this.upload_ex = result.ex;
+      }
+      fr.readAsText(files.item(0));
+
+      console.log(this.upload_deck);
+      console.log(data);
+    },
     onSubmit(event) {
       event.preventDefault()
       alert(JSON.stringify(this.form))
