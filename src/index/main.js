@@ -7,6 +7,8 @@ import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import VueApexCharts from "vue-apexcharts";
+import { BVToastPlugin } from "bootstrap-vue";
+
 
 // 安裝 BootstrapVue
 Vue.use(BootstrapVue);
@@ -20,6 +22,9 @@ Vue.prototype.$bus = new Vue();
 
 // use apexchart
 Vue.use(VueApexCharts);
+
+// use toast
+Vue.use(BVToastPlugin)
 
 new Vue({
   render: (h) => h(CardColumn),

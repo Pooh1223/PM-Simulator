@@ -61,7 +61,7 @@
       <div class="row">
         <div
           class="card col-2"
-          v-for="(element, index) in card_chosen.concat(ex_card_chosen)"
+          v-for="(element, index) in main_card_chosen.concat(ex_card_chosen)"
           :key="element.detail.card_number">
 
           <img
@@ -141,10 +141,15 @@
       </div>
     </b-modal>
 
+    <!-- Upload area -->
+
     <b-modal 
       id="upload-deck"
+      ref="upload-deck"
       scrollable
       title="Upload your deck.json file"
+      ok-title="Upload"
+      @ok="uploadToChosen"
       >
         <div>
           <b-form-file
@@ -154,8 +159,11 @@
             drop-placeholder="Drop file here..."
             id="selected"
           ></b-form-file>
-          <b-button @click="print">Import</b-button>
+          <b-button @click="readDeck">Preview</b-button>
         </div>
+
+        <br>
+        <h5>Preview of deck</h5>
 
         <div>
           <b-list-group>
@@ -397,7 +405,7 @@
             <div class="row">
               <div
                 class="col-2"
-                v-for="element in card_chosen"
+                v-for="element in main_card_chosen"
                 :key="element.detail.card_number"
                 style="padding-left: 0px; padding-right: 0px;"
                 >
@@ -440,6 +448,7 @@
           type="submit"
           variant="primary"
           v-b-modal.upload-deck
+          @click="resetUpload"
           >
           Upload
         </b-button>
@@ -497,7 +506,7 @@ export default {
 
       //tester[0],tester[1],tester[2],tester[3],tester[4],tester[5]
       
-      card_chosen: [],
+      main_card_chosen: [],
       ex_card_chosen: [],
       upload_deck: null,
       upload_main: [],
@@ -562,27 +571,7 @@ export default {
     };
   },
   methods: {
-    print(data) {
-      const files = document.getElementById('selected').files;
-      if (files.length <= 0) {
-        return false;
-      }
-
-      const fr = new FileReader();
-
-      fr.onload = e => {
-        const result = JSON.parse(e.target.result);
-        //formatted = JSON.stringify(result, null, 2);
-
-        //console.log(result.main);
-        this.upload_main = result.main;
-        this.upload_ex = result.ex;
-      }
-      fr.readAsText(files.item(0));
-
-      console.log(this.upload_deck);
-      console.log(data);
-    },
+    
     onSubmit(event) {
       event.preventDefault()
       alert(JSON.stringify(this.form))
@@ -650,10 +639,10 @@ export default {
 
     // update card
     addCard(id) {
-      if(id < this.card_chosen.length){
+      if(id < this.main_card_chosen.length){
         // belongs to main card
 
-        let tmp_card = this.card_chosen[id];
+        let tmp_card = this.main_card_chosen[id];
         if(tmp_card.cnt != 4){
           tmp_card.cnt += 1;
           this.$bus.$emit("add-to-deck",tmp_card);
@@ -662,7 +651,7 @@ export default {
       } else {
         // belongs to ex card
 
-        let tmp_card = this.ex_card_chosen[id - this.card_chosen.length];
+        let tmp_card = this.ex_card_chosen[id - this.main_card_chosen.length];
         if(tmp_card.cnt != 4){
           tmp_card.cnt += 1;
           this.$bus.$emit("add-to-deck",tmp_card);
@@ -671,10 +660,10 @@ export default {
       }
     },
     removeCard(id) {
-      if(id < this.card_chosen.length){
+      if(id < this.main_card_chosen.length){
         // belongs to main card
 
-        let tmp_card = this.card_chosen[id];
+        let tmp_card = this.main_card_chosen[id];
 
         if(tmp_card.cnt != 0){
           tmp_card.cnt -= 1;
@@ -684,7 +673,7 @@ export default {
       } else {
         // belongs to ex card
 
-        let tmp_card = this.ex_card_chosen[id - this.card_chosen.length];
+        let tmp_card = this.ex_card_chosen[id - this.main_card_chosen.length];
         if(tmp_card.cnt != 0){
           tmp_card.cnt -= 1;
           this.$bus.$emit("remove-from-deck",tmp_card);
@@ -701,10 +690,54 @@ export default {
 
     // convert deck to json file
     deckToJson() {
-      let deck_dict = {'main': this.card_chosen, 'ex': this.ex_card_chosen};
+      let deck_dict = {'main': this.main_card_chosen, 'ex': this.ex_card_chosen};
       const deck_json = JSON.stringify(deck_dict);
       download(deck_json,"deck","application/json");
       console.log(JSON.parse(deck_json));
+    },
+    readDeck() {
+      const files = document.getElementById('selected').files;
+      if (files.length <= 0) {
+        return false;
+      }
+
+      const fr = new FileReader();
+
+      fr.onload = e => {
+        const result = JSON.parse(e.target.result);
+        //formatted = JSON.stringify(result, null, 2);
+
+        //console.log(result.main);
+        this.upload_main = result.main;
+        this.upload_ex = result.ex;
+        console.log(this.upload_main);
+        console.log(this.upload_ex);
+        console.log(this.upload_main.length);
+      }
+      fr.readAsText(files.item(0));
+
+      console.log(this.upload_deck);
+      console.log("jizzzzz");
+    },
+    resetUpload() {
+      this.upload_main = [];
+      this.upload_ex = [];
+    },
+    uploadToChosen() {
+
+      // avoid user doesn't click preview button
+      const files = document.getElementById('selected').files;
+      console.log(files.length);
+      this.readDeck();
+
+      setTimeout(() => {
+        if(this.upload_main.length || this.upload_ex.length){
+          this.main_card_chosen = this.upload_main;
+          this.ex_card_chosen = this.upload_ex;
+          console.log("write to deck");
+        }
+      },50);
+      
     },
   },
   mounted() {
@@ -715,7 +748,7 @@ export default {
         if(card.detail.effect.includes("EXカード")){
           this.ex_card_chosen.push(card);
         } else {
-          this.card_chosen.push(card);
+          this.main_card_chosen.push(card);
         }
 
         console.log(card);
@@ -763,17 +796,17 @@ export default {
               }
           }
         } else {
-          for(let i = 0;i < this.card_chosen.length;++i){
-            if(card.detail.card_number == this.card_chosen[i].detail.card_number &&
-              card.detail.lines == this.card_chosen[i].detail.lines){
-                this.card_chosen.splice(i,1);
+          for(let i = 0;i < this.main_card_chosen.length;++i){
+            if(card.detail.card_number == this.main_card_chosen[i].detail.card_number &&
+              card.detail.lines == this.main_card_chosen[i].detail.lines){
+                this.main_card_chosen.splice(i,1);
                 console.log("deleted");
                 break;
               }
           }
         }
           
-        console.log(this.card_chosen);
+        console.log(this.main_card_chosen);
       }
 
       // update color column
