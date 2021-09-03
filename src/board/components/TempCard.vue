@@ -245,26 +245,30 @@ export default {
     ok(bvModalEvt) {
       bvModalEvt.preventDefault();
 
+      this.readDeck();
+
       // if deck is valid
 
-      if(!this.validDeck()){
-        console.log("not valid!");
-        console.log(this.deckErrMsg);
+      setTimeout(() => {
+        if(!this.validDeck()){
+          console.log("not valid!");
+          console.log(this.deckErrMsg);
 
-        var err_box = document.getElementById("error_notify");
-        err_box.classList.add("deck_error_notify");
-        return;
-      }
+          var err_box = document.getElementById("error_notify");
+          err_box.classList.add("deck_error_notify");
+          return;
+        }
 
-      // emit to deck ,ex-card ,hand to load deck
-      
-      //this.$bus.$emit("load-to-deck");
-      //this.$bus.$emit("load-to-hand");
-      this.$bus.$emit("load-to-ex",this.upload_ex);
+        // emit to deck ,ex-card ,hand to load deck
+        
+        //this.$bus.$emit("load-to-deck");
+        //this.$bus.$emit("load-to-hand");
+        this.$bus.$emit("load-to-ex",this.upload_ex);
 
-      this.$nextTick(() => {
-        this.$bvModal.hide('deck-upload');
-      });
+        this.$nextTick(() => {
+          this.$bvModal.hide('deck-upload');
+        });
+      },50);
     },
     validDeck() {
       let valid = true;
