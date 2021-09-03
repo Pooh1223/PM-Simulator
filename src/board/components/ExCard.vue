@@ -68,19 +68,19 @@ export default {
     //DialogDrag,
   },
   data() {
-    const message = [];
+    //const message = [];
 
-    for(let i = 0;i < 15;++i){
-      message.push(toString(i + 1));
-    }
+    //for(let i = 0;i < 15;++i){
+    //  message.push(toString(i + 1));
+    //}
     
-    const mapped_list = message.map((name, index) => {
-      return { name, order: index + 1 };
-    });
+    //const mapped_list = message.map((name, index) => {
+    //  return { name, order: index + 1 };
+    //});
 
     return {
       drag: false,
-      card_list: mapped_list,
+      card_list: [],
       showDialog: false,
       preText: 2,
       properDrop: false,
@@ -130,6 +130,19 @@ export default {
     this.$bus.$on("remove-to-ex-deck",(id) => {
       console.log("remove " + id + "-th card");
       this.card_list.splice(id,1);
+    });
+
+    // load
+
+    this.$bus.$on("load-to-ex",(cards) => {
+      
+      for(let i = 0;i < cards.length;++i){
+        for(let j = 0;j < cards[i].cnt;++j){
+          this.card_list.push(cards[i]);
+        }
+      }
+      
+      console.log(this.card_list);
     });
 
     // drop

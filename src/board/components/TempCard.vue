@@ -88,7 +88,7 @@
         
     </b-modal>
 
-    <strong> {{title_from}} </strong>
+    <strong> {{title_from}} {{this.card_list.length}} 枚</strong>
     <draggable
       class="card-list"
       tag="div"
@@ -110,10 +110,10 @@
         <div
           class="item col"
           v-for="(element, index) in card_list"
-          :key="'ha-' + index"
+          :key="'temp-' + index"
           :class = "index % 10 == 0 ? 'item col-1' : 'item col-1' "
         >
-          <img src="../PM_Back.jpg" />
+          <img :src="title_from == 'Deck' ? back_img : element.detail.img_url" />
           <i
             :class="
               element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'
@@ -121,13 +121,6 @@
             @click="element.fixed = !element.fixed"
             aria-hidden="true"
           >{{index}},{{element.order}}</i>
-          <!--<b-button
-            id="pick"
-            variant="outline-primary"
-            @click="addToHand(index)"
-            v-if="click_from_addable">
-            Pick
-          </b-button>-->
 
         </div>
       </transition-group>
@@ -167,7 +160,7 @@ export default {
       drag: false,
       title_from: "Temp Card Area",
       modalData: null,
-      click_from_addable: false,
+      back_img: require('../PM_Back.jpg'),
 
       // upload
       upload_deck: null,
@@ -263,6 +256,12 @@ export default {
         return;
       }
 
+      // emit to deck ,ex-card ,hand to load deck
+      
+      //this.$bus.$emit("load-to-deck");
+      //this.$bus.$emit("load-to-hand");
+      this.$bus.$emit("load-to-ex",this.upload_ex);
+
       this.$nextTick(() => {
         this.$bvModal.hide('deck-upload');
       });
@@ -291,10 +290,7 @@ export default {
         console.log(this.deckErrMsg);
         return valid;
       },50);
-    },
-    test() {
-      this.$bvToast.show('testoast');
-      console.log('click');
+      return true;
     },
   },
   computed: {
@@ -311,28 +307,25 @@ export default {
     this.$bus.$on("open-from-deck",(msg,card_list) => {
       this.title_from = msg;
       this.card_list = card_list;
-      this.click_from_addable = false;
       console.log("temp: receive!");
+      console.log(this.title_from);
     });
 
     this.$bus.$on("open-from-discard",(msg,card_list) => {
       this.title_from = msg;
       this.card_list = card_list;
-      this.click_from_addable = true;
       console.log("temp: receive!");
     });
 
     this.$bus.$on("open-from-ex-deck",(msg,card_list) => {
       this.title_from = msg;
       this.card_list = card_list;
-      this.click_from_addable = true;
       console.log("temp: receive!");
     });
 
     this.$bus.$on("open-from-excluded",(msg,card_list) => {
       this.title_from = msg;
       this.card_list = card_list;
-      this.click_from_addable = true;
       console.log("temp: receive!");
     });
 
@@ -367,9 +360,9 @@ export default {
   float: left;
   //width: 50%;
   //height: 300px;
-  background-image: url("../PM_Back.jpg");
-  background-size: 100%;
-  background-repeat: no-repeat;
+  //background-image: url("../PM_Back.jpg");
+  //background-size: 100%;
+  //background-repeat: no-repeat;
   //background-position: center;
   padding: 0;
 }
@@ -379,7 +372,7 @@ export default {
 .item img {
   vertical-align: top;
   max-width: 100%;
-  opacity: 0;
+  //opacity: 0;
 }
 .deck-img-tb {
   width:100%;
