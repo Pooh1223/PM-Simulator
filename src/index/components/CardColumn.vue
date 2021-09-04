@@ -97,7 +97,7 @@ export default {
     const mydata = require("../../board/data.json");
     
     const tester = mydata.map((detail, index) => {
-      return {detail, order: index + 1, excost: 0, exsource: 0, exap: 0, exdp: 0, overlap: [], cnt: 0};
+      return {detail, order: index + 1, excost: 0, exsource: 0, exap: 0, exdp: 0, overlap: [], cnt: 0, coin: 0};
     });
     console.log(tester);
     

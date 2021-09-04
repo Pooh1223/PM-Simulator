@@ -94,6 +94,7 @@
       tag="div"
       v-model="card_list"
       v-bind="dragOptions"
+      :emptyInsertThreshold="150"
       @start="drag = true"
       @end="drag = false"
       @add="updateAddTo"

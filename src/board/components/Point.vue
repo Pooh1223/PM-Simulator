@@ -6,7 +6,6 @@
       ref="point-modal"
       scrollable
       title="Card-Detail"
-      hide-backdrop
       :data="modalData">
       <div class="card-container">
         <img :src="modalData === null ? '../PM_Back.jpg' : modalData.detail.img_url" />
@@ -115,7 +114,7 @@ export default {
     const mydata = require("../data.json");
     //console.log(mydata);
     const tester = mydata.map((detail, index) => {
-      return {detail, order: index + 1, excost: 0, exsource: 0, exap: 0, exdp: 0, overlap: []};
+      return {detail, order: index + 1, excost: 0, exsource: 0, exap: 0, exdp: 0, overlap: [], cnt: 0, coin: 0};
     });
     console.log(tester);
     //console.log(tester.slice(0,1));

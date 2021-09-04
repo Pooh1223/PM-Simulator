@@ -5,7 +5,6 @@
       id="main-detail"
       scrollable
       title="Card-Detail"
-      hide-backdrop
       :data="modalData">
       <div class="card-container">
         <img :src="modalData === null ? '../PM_Back.jpg' : modalData.detail.img_url" />
@@ -51,6 +50,38 @@
                     variant="outline-danger"
                     v-if="showTable(index) && showTableBtn(index)"
                     @click="resetTableValue(index,attr[0])"
+                    >
+                    Reset
+                  </b-button>
+                </td>
+              </tr>
+              
+              <tr>
+                <th>Coin</th>
+                <td>{{modalData.coin}}</td>
+                <td>
+                  <b-button
+                    class="btn-line"
+                    variant="outline-danger"
+                    @click="addTableValue(15,'Coin')"
+                    >
+                    +
+                  </b-button>
+                </td>
+                <td>
+                  <b-button
+                    class="btn-line"
+                    variant="outline-danger"
+                    @click="minusTableValue(15,'Coin')"
+                    >
+                    -
+                  </b-button>
+                </td>
+                <td>
+                  <b-button
+                    class="btn-line"
+                    variant="outline-danger"
+                    @click="resetTableValue(15,'Coin')"
                     >
                     Reset
                   </b-button>
@@ -187,7 +218,7 @@ export default {
     const mydata = require("../data.json");
 
     const tester = mydata.map((detail, index) => {
-      return {detail, order: index + 1, excost: 0, exsource: 0, exap: 0, exdp: 0, overlap: []};
+      return {detail, order: index + 1, excost: 0, exsource: 0, exap: 0, exdp: 0, overlap: [], cnt: 0, coin: 0};
     });
     console.log(tester);
 
@@ -258,6 +289,7 @@ export default {
     // 7 is the index of source property in detail
     // 10 is the index of AP property in detail
     // 11 is the index of DP property in detail
+    // 15 is the index of coin property
 
     addTableValue(index, col) {
 
@@ -349,6 +381,10 @@ export default {
               this.textChange.push(index);
             }
           }
+          break;
+        case "Coin": 
+          this.modalData.coin += 1;
+          
           break;
       }
     },
@@ -442,6 +478,12 @@ export default {
             }
           }
           break;
+        case "Coin": 
+          if(this.modalData.coin > 0){
+            this.modalData.coin -= 1;
+          }
+          
+          break;
       }
     },
     resetTableValue(index, col) {
@@ -495,6 +537,9 @@ export default {
           this.modalData.detail.DP = parseInt(this.modalData.detail.DP) - parseInt(this.modalData.exdp);
           this.modalData.exdp = 0;
 
+          break;
+        case "Coin":
+          this.modalData.coin = 0;
           break;
       }
 
