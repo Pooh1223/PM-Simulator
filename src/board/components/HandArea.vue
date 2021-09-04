@@ -106,7 +106,7 @@ import draggable from "vuedraggable";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
-const message = ["1", "2", "3", "4", "5", "6", "7", "8"];
+//const message = ["1", "2", "3", "4", "5", "6", "7", "8"];
 var startTime , endTime;
 
 export default {
@@ -117,11 +117,10 @@ export default {
     draggable,
   },
   data() {
-    const rowofcard = 5;
-    const mapped_list = message.map((name, index) => {
-      return { name, order: index + 1};
-    });
-    console.log(mapped_list);
+    //const mapped_list = message.map((name, index) => {
+    //  return { name, order: index + 1};
+    //});
+    //console.log(mapped_list);
 
     const mydata = require("../data.json");
     //console.log(mydata);
@@ -132,8 +131,7 @@ export default {
     //console.log(tester.slice(0,1));
 
     return {
-      row_of_card: rowofcard,
-      card_list: tester.slice(16,24),
+      card_list: [],
       drag: false,
 
       modalData: tester[0],
@@ -756,6 +754,17 @@ export default {
     this.$bus.$on("cancel-hand-drop",(id) => {
       this.card_list.splice(id,1);
       console.log("cancel hand drop: " + id);
+    });
+
+    // load
+
+    this.$bus.$on("load-to-hand",(cards) => {
+      console.log("jiddzzzzz");
+
+      this.card_list = cards;
+      this.modalData = this.card_list[0];
+
+      console.log(this.card_list);
     });
   }
 };

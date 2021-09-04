@@ -223,15 +223,15 @@ export default {
     DialogDrag,
   },
   data() {
-    const message = [];
+    //const message = [];
 
-    for(let i = 0;i < 25;++i){
-      message.push(toString(i + 1));
-    }
+    //for(let i = 0;i < 25;++i){
+    //  message.push(toString(i + 1));
+    //}
     
-    const mapped_list = message.map((name, index) => {
-      return { name, order: index + 1 };
-    });
+    //const mapped_list = message.map((name, index) => {
+    //  return { name, order: index + 1 };
+    //});
 
     return {
       drag: false,
@@ -240,7 +240,7 @@ export default {
       dragCard: null,
       addFrom: null,
 
-      card_list: mapped_list,
+      card_list: [],
       showMainDialog: false,
       preText: 2,
       mainDialogX: 500,
@@ -257,7 +257,7 @@ export default {
   },
   methods: {
     openTemp() {
-      this.$bus.$emit("open-from-deck","Deck",this.card_list);
+      this.$bus.$emit("open-temp","Deck",this.card_list);
       console.log("deck: sent!");
     },
     toggleMainDialog(data) {
@@ -516,6 +516,15 @@ export default {
     this.$bus.$on("remove-to-deck",(id) => {
       console.log("remove " + id + "-th card");
       this.card_list.splice(id,1);
+    });
+
+    // load
+
+    this.$bus.$on("load-to-deck",(cards) => {
+
+      this.card_list = cards;
+      this.shuffle();
+      console.log(this.card_list);
     });
 
     // drop

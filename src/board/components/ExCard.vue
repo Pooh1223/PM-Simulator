@@ -93,7 +93,7 @@ export default {
       return false;
     },
     openTemp() {
-      this.$bus.$emit("open-from-ex-deck","Ex-Deck",this.card_list);
+      this.$bus.$emit("open-temp","Ex-Deck",this.card_list);
       console.log("ex-deck: sent!");
     },
     toggleDialog(data) {

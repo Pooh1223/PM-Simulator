@@ -242,6 +242,12 @@ export default {
       console.log(this.upload_deck);
       console.log("jizzzzz");
     },
+    shuffle(arr) {
+      for(let i = arr.length - 1;i > 0;--i){
+        let j = Math.floor(Math.random() * (i + 1));
+        [arr[i],arr[j]] = [arr[j],arr[i]];
+      }
+    },
     ok(bvModalEvt) {
       bvModalEvt.preventDefault();
 
@@ -260,10 +266,35 @@ export default {
         }
 
         // emit to deck ,ex-card ,hand to load deck
-        
-        //this.$bus.$emit("load-to-deck");
-        //this.$bus.$emit("load-to-hand");
+        // first unfold upload_main into upload_deck
+        // then split 7 cards from upload_deck to upload_hand
+        // finally, we can emit
+
+        let upload_deck = [];
+        let upload_hand = [];
+
+        for(let i = 0;i < this.upload_main.length;++i){
+          for(let j = 0;j < this.upload_main[i].cnt;++j){
+            upload_deck.push(this.upload_main[i]);
+          }
+        }
+
+        this.shuffle(upload_deck);
+
+        for(let i = 0;i < 7;++i){
+          let random = Math.floor(Math.random() * upload_deck.length);
+          upload_hand.push(upload_deck[random]);
+          console.log(upload_deck[random]);
+          upload_deck.splice(random,1);
+        }
+
+        this.$bus.$emit("load-to-deck",upload_deck);
+        this.$bus.$emit("load-to-hand",upload_hand);
         this.$bus.$emit("load-to-ex",this.upload_ex);
+
+        console.log("upload_deck");
+        console.log(upload_deck);
+        console.log(upload_hand);
 
         this.$nextTick(() => {
           this.$bvModal.hide('deck-upload');
@@ -308,26 +339,10 @@ export default {
     },
   },
   mounted() {
-    this.$bus.$on("open-from-deck",(msg,card_list) => {
-      this.title_from = msg;
-      this.card_list = card_list;
-      console.log("temp: receive!");
-      console.log(this.title_from);
-    });
 
-    this.$bus.$on("open-from-discard",(msg,card_list) => {
-      this.title_from = msg;
-      this.card_list = card_list;
-      console.log("temp: receive!");
-    });
+    // be opened
 
-    this.$bus.$on("open-from-ex-deck",(msg,card_list) => {
-      this.title_from = msg;
-      this.card_list = card_list;
-      console.log("temp: receive!");
-    });
-
-    this.$bus.$on("open-from-excluded",(msg,card_list) => {
+    this.$bus.$on("open-temp",(msg,card_list) => {
       this.title_from = msg;
       this.card_list = card_list;
       console.log("temp: receive!");

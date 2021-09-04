@@ -16,7 +16,7 @@
       >
         <div
           class="discard"
-          v-for="(element,index) in card_list"
+          v-for="(element,index) in show_list"
           :key="'dis-' + index"
           @mouseenter="stay(dragCard)"
         >
@@ -59,19 +59,19 @@ export default {
     draggable,
   },
   data() {
-    const message = [];
+    //const message = [];
 
-    for(let i = 0;i < 13;++i){
-      message.push(toString(i + 1));
-    }
+    //for(let i = 0;i < 13;++i){
+    //  message.push(toString(i + 1));
+    //}
     
-    const mapped_list = message.map((name, index) => {
-      return { name: String.fromCharCode('a'.charCodeAt(0) + index), order: index + 1 };
-    });
+    //const mapped_list = message.map((name, index) => {
+    //  return { name: String.fromCharCode('a'.charCodeAt(0) + index), order: index + 1 };
+    //});
 
     return {
-      card_list: mapped_list,
-      first_card: mapped_list[0],
+      show_list: [1],
+      card_list: [],
       drag: false,
 
       properDrop: false,
@@ -88,7 +88,7 @@ export default {
     },
 
     openTemp() {
-      this.$bus.$emit("open-from-discard","Discard",this.card_list);
+      this.$bus.$emit("open-temp","Discard",this.card_list);
       console.log("discard: sent!");
     },
     stay(card) {

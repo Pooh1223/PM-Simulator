@@ -16,7 +16,7 @@
       >
         <div
           class="excluded"
-          v-for="(element,index) in card_list"
+          v-for="(element,index) in show_list"
           :key="'excl-' + index"
           @mouseenter="stay(dragCard)"
         >
@@ -59,19 +59,20 @@ export default {
     draggable,
   },
   data() {
-    const message = [];
+    //const message = [];
 
-    for(let i = 0;i < 8;++i){
-      message.push(toString(i + 1));
-    }
+    //for(let i = 0;i < 8;++i){
+    //  message.push(toString(i + 1));
+    //}
     
-    const mapped_list = message.map((name, index) => {
-      return { name, order: index + 1 };
-    });
+    //const mapped_list = message.map((name, index) => {
+    //  return { name, order: index + 1 };
+    //});
 
     return {
-      card_list: mapped_list,
-      first_card: mapped_list[0],
+      show_list: [1],
+      card_list: [],
+
       drag: false,
       properDrop: false,
       dragCard: null,
@@ -84,7 +85,7 @@ export default {
     },
 
     openTemp() {
-      this.$bus.$emit("open-from-excluded","Excluded",this.card_list);
+      this.$bus.$emit("open-temp","Excluded",this.card_list);
       console.log("Excluded: sent!");
     },
     stay(card) {
