@@ -135,12 +135,7 @@ export default {
     // load
 
     this.$bus.$on("load-to-ex",(cards) => {
-      
-      for(let i = 0;i < cards.length;++i){
-        for(let j = 0;j < cards[i].cnt;++j){
-          this.card_list.push(cards[i]);
-        }
-      }
+      this.card_list = cards;
       
       console.log(this.card_list);
     });

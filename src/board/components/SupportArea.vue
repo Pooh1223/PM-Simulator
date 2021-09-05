@@ -100,6 +100,8 @@
       :emptyInsertThreshold="150"
       @start="drag = true"
       @end="drop"
+      @choose="updateLast"
+      @remove="clearState"
       :move="dropArea"
     >
       <transition-group
@@ -118,7 +120,7 @@
         >
           <img 
             :src="element.detail.img_url"
-            :class="card_direct[element.order - 1] == false ? '' : 'col-2 rotate'"
+            :class="card_direct[element.order] == false ? '' : 'col-2 rotate'"
             style="width: 100%"
             />
           <i
@@ -145,27 +147,31 @@
               :name="!drag ? 'flip-list' : null"
               style="margin:auto;"
             >
-              
-              <div
-                class="support-item col-md-6" 
-                v-for="element in modalData.overlap"
-                :key="element.order"
-                v-b-modal.support-detail
-                @click="openModal(element)"
-              >
-                <img 
-                  :src="element.detail.img_url"
-                  :class="card_direct[element.order - 1] == false ? '' : 'col-2 rotate'"
-                  style="width: 100%"
-                  />
-                <i
-                  :class="
-                    element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'
-                  "
-                  @click="element.fixed = !element.fixed"
-                  aria-hidden="true"
-                ></i>
-              </div>
+              <template v-if="modalData.overlap.length > 0">
+                <div
+                  class="support-item col-md-6" 
+                  v-for="element in modalData.overlap"
+                  :key="element.order"
+                  v-b-modal.support-detail
+                  @click="openModal(element)"
+                >
+                  <img 
+                    :src="element.detail.img_url"
+                    :class="card_direct[element.order - 1] == false ? '' : 'col-2 rotate'"
+                    style="width: 100%"
+                    />
+                  <i
+                    :class="
+                      element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'
+                    "
+                    @click="element.fixed = !element.fixed"
+                    aria-hidden="true"
+                  ></i>
+                </div>
+              </template>
+              <template v-else>
+                <font key="not-a-card" size="3"> Drop your card here </font>
+              </template>
             </transition-group>
           </draggable>
 
@@ -180,8 +186,8 @@
             <b-button
               id="rest"
               variant="outline-primary"
-              @click.stop="toggleRotateCard(element.order - 1)">
-              {{card_rest[element.order - 1]}}
+              @click.stop="toggleRotateCard(element.order)">
+              {{card_rest[element.order]}}
             </b-button>
           </div>
         </div>
@@ -198,10 +204,12 @@ import draggable from "vuedraggable";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
-//const message = ["1", "2", "3", "4", "5", "6", "7", "8"];
-const showd = [false,false,false,false,false,false,false,false,false];
-const img_state = [false,false,false,false,false,false,false,false];
-const cards_state = ["Rest","Rest","Rest","Rest","Rest","Rest","Rest","Rest"];
+// overlap show
+const showd = [];
+// card img rotate
+const img_state = [];
+// card state
+const cards_state = [];
 
 export default {
   name: "main-area",
@@ -219,16 +227,18 @@ export default {
     const tester = mydata.map((detail, index) => {
       return {detail, order: index + 1, excost: 0, exsource: 0, exap: 0, exdp: 0, overlap: [], cnt: 0, coin: 0};
     });
-    console.log(tester);
+    //console.log(tester);
 
-    for(let i = 0;i < tester.length;++i){
+    let all_cards_num = 100;
+
+    for(let i = 0;i < all_cards_num;++i){
       showd.push(false);
       img_state.push(false);
       cards_state.push("Rest");
     }
 
     return {
-      card_list: tester.slice(8,16),
+      card_list: [],
       drag: false,
       modalData: tester[0],
       card_rest: cards_state,
@@ -243,6 +253,8 @@ export default {
               this.lastPlace = null;
               console.log("kill last place");
             },50),
+
+      last_chosen_order: -1,
     };
   },
   methods: {
@@ -267,6 +279,12 @@ export default {
       this.card_direct = this.card_direct.map((el,i) => 
         i === id ? !el : el
       );
+      
+      if(this.card_rest[id] == "Rest"){
+        this.card_rest.splice(id,1,"Stand");
+      } else {
+        this.card_rest.splice(id,1,"Rest");
+      }
     },
 
     // drop
@@ -851,6 +869,19 @@ export default {
       console.log(data.to);
       console.log(data.to.getAttribute("area-name"));
       console.log(data.from);
+    },
+
+    // update the last chosen card
+    updateLast(data) {
+      this.last_chosen_order = this.card_list[data.oldIndex].order;
+      console.log("update last");
+      console.log(this.last_chosen_order);
+    },
+    // clear card state when it's removed
+    clearState() {
+      this.card_rest[this.last_chosen_order] = "Rest";
+      this.card_direct[this.last_chosen_order] = false;
+      this.showDialog[this.last_chosen_order] = false;
     },
   },
   computed: {

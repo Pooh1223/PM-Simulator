@@ -269,14 +269,21 @@ export default {
         // emit to deck ,ex-card ,hand to load deck
         // first unfold upload_main into upload_deck
         // then split 7 cards from upload_deck to upload_hand
-        // finally, we can emit
+        // after reorder each card, we can emit finally
+
+        // handle with main deck
 
         let upload_deck = [];
         let upload_hand = [];
+        let upload_exdeck = [];
+        let order_cnt = 0;
 
         for(let i = 0;i < this.upload_main.length;++i){
           for(let j = 0;j < this.upload_main[i].cnt;++j){
-            upload_deck.push(this.upload_main[i]);
+            let card = JSON.parse(JSON.stringify(this.upload_main[i]));
+            card.order = order_cnt;
+            upload_deck.push(card);
+            order_cnt++;
           }
         }
 
@@ -289,13 +296,27 @@ export default {
           upload_deck.splice(random,1);
         }
 
+        // handle with ex deck
+
+        for(let i = 0;i < this.upload_ex.length;++i){
+          for(let j = 0;j < this.upload_ex[i].cnt;++j){
+            let card = JSON.parse(JSON.stringify(this.upload_ex[i]));
+            card.order = order_cnt;
+            upload_exdeck.push(card);
+            order_cnt++;
+            console.log(card);
+          }
+        }
+
+
         this.$bus.$emit("load-to-deck",upload_deck);
         this.$bus.$emit("load-to-hand",upload_hand);
-        this.$bus.$emit("load-to-ex",this.upload_ex);
+        this.$bus.$emit("load-to-ex",upload_exdeck);
 
         console.log("upload_deck");
         console.log(upload_deck);
         console.log(upload_hand);
+        console.log(order_cnt);
 
         this.$nextTick(() => {
           this.$bvModal.hide('deck-upload');
